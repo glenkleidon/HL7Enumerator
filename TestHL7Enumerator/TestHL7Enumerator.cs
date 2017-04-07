@@ -17,8 +17,25 @@ namespace TestHL7Enumerator
         public void TestHL7Enumerator_create_intialises_a_instance()
         {
             HL7Enumerator.HL7Message msg = new HL7Enumerator.HL7Message(Example1);
+
             Assert.IsFalse(string.IsNullOrEmpty(msg.Segments[0].ToString()));
             Console.WriteLine(msg.Segments[0].ToString());
+
+            Assert.AreEqual("MSH", msg.Segments[0][0].Value);
+            Assert.AreEqual("PID", msg.Segments[1][0].Value);
+            Assert.AreEqual("PD1", msg.Segments[2][0].Value);
+            Assert.AreEqual("OBR", msg.Segments[3][0].Value);
+            Assert.AreEqual("OBX", msg.Segments[4][0].Value);
+        }
+
+        [TestMethod]
+        public void TestHL7Enumerator_Segment_returns_list_of_correct_segments()
+        {
+            HL7Enumerator.HL7Message msg = new HL7Enumerator.HL7Message(Example1);
+            var pd1Segments = msg.Segment("PD1");
+            Assert.IsTrue(pd1Segments.Count == 1);
+            Console.WriteLine(pd1Segments[0].ToString());
+
         }
     }
 }
