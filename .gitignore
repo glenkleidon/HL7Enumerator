@@ -45,6 +45,7 @@ project.lock.json
 artifacts/
 
 *_i.c
+*.bak
 *_p.c
 *_i.h
 *.ilk
