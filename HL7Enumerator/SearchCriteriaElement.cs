@@ -8,14 +8,14 @@ namespace HL7Enumerator
 {
     public struct SearchCriteriaElement
     {
-        public readonly int Repitition;
+        public readonly int Repetition;
         public readonly int Position;
         public bool Enabled;
         private string value;
         public string Value { get { return value; } }
-        public SearchCriteriaElement(int position, int repitition = 0, string value = "", bool enabled=true)
+        public SearchCriteriaElement(int position, int repetition = 0, string value = "", bool enabled=true)
         {
-            this.Repitition = repitition;
+            this.Repetition = repetition;
             this.Position = position;
             this.value = value;
             this.Enabled = enabled;
@@ -40,7 +40,7 @@ namespace HL7Enumerator
 
         public static SearchCriteriaElement ParseElement(string criteria)
         {
-            int repitition = 0;
+            int repetition = 0;
             int position = -1;
             string value = "";
             string numberElement = criteria;
@@ -51,8 +51,8 @@ namespace HL7Enumerator
                 var q = criteria.IndexOf(']', p);
                 if (q < 0) throw new ArgumentException(string.Format("Closing bracket not present in {0}", 0));
                 numberElement = numberElement.Substring(0, p);
-                if (!Int32.TryParse(criteria.Substring(p + 1, q - p - 1), out repitition))
-                    throw new ArgumentException(string.Format("Repitition number is not an integer at {0}", criteria));
+                if (!Int32.TryParse(criteria.Substring(p + 1, q - p - 1), out repetition))
+                    throw new ArgumentException(string.Format("Repetition number is not an integer at {0}", criteria));
             }
             if (numberElement.IndexOf("'") >= 0)
             {
@@ -71,7 +71,7 @@ namespace HL7Enumerator
                     throw new ArgumentException(string.Format("Search criteria position is not an integer at {0}. Are you missing quotes?", criteria));
                 }
             }
-            return new SearchCriteriaElement(position, repitition, value);
+            return new SearchCriteriaElement(position, repetition, value);
         }
     }
 }

@@ -13,8 +13,8 @@ namespace TestHL7Enumerator
         private const string OBX1 = @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|";
         private const string OBX2 = @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
 
-        private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS";
-        private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C ~2 Test Street^^WODEN^ACT^2606^AUS^C";
+        private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
+        private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
 
         private const string Example1 = MSH + "\n" + PID + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
         private const string Example2 = MSHA + "\n" + PIDA + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
@@ -79,11 +79,31 @@ namespace TestHL7Enumerator
         {
             HL7Enumerator.HL7Message msg = Example2;
             Assert.AreEqual(Example2, "" + msg);
-            string PIDfield = msg.Element("MSH.12.2.3");
-            Assert.AreEqual("ISO", PIDfield);
+            string field = msg.Element("MSH.12.2.3");
+            Assert.AreEqual("ISO", field);
 
         }
 
+        [TestMethod]
+        public void TestHL7Enumerator_Element_Repeating_Field_Text_returns_Correct_Component()
+        {
+            HL7Enumerator.HL7Message msg = Example2;
+            Assert.AreEqual(Example2, "" + msg);
+            string field = msg.Element("OBR[1].16[2]");
+            Assert.AreEqual("1624^Smith^Bill^R", field);
+
+            string PIDfield = msg.Element("PID.11[2].3");
+            Assert.AreEqual("WODEN", PIDfield);
+
+            string MSHfield = msg.Element("MSH/18[2]");
+            Assert.AreEqual("8859/1", MSHfield);
+
+            string EmptyMSHfield = msg.Element("MSH/18[3]");
+            Assert.AreEqual(string.Empty, EmptyMSHfield);
+
+
+
+        }
 
     }
 }

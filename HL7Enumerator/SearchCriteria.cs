@@ -19,15 +19,15 @@ namespace HL7Enumerator
             {
                 elements[0] = new SearchCriteriaElement(
                       elements[0].Position,
-                      elements[0].Repitition,
+                      elements[0].Repetition,
                       value);
             }
         }
-        public int SegmentRepitition
+        public int SegmentRepetition
         {
             get
             {
-                return elements[0].Repitition;
+                return elements[0].Repetition;
             }
             set
             {
@@ -69,7 +69,7 @@ namespace HL7Enumerator
         {
             var newcriteria = Parse(criteria);
             this.Segment = newcriteria.Segment;
-            this.SegmentRepitition = newcriteria.SegmentRepitition;
+            this.SegmentRepetition = newcriteria.SegmentRepetition;
             this.Field = newcriteria.Field;
             this.Component = newcriteria.Component;
             this.Subcomponent = newcriteria.Subcomponent;

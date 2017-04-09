@@ -13,7 +13,10 @@ namespace HL7Enumerator
     public class HL7Element : List<HL7Element> {
         private char _separator;
         private string _separators;
+        private HL7Element _parentElement;
+        private bool fieldRepetition = false;
         public char Separator { get { return _separator; } }
+        public HL7Element Parent { get { return _parentElement; } }
 
         private string value;
         public string Value { get { return value; } }
@@ -33,7 +36,10 @@ namespace HL7Enumerator
         {
             _separator = separator;
             _separators = separators;
+            _parentElement = owner;
             var index = separators.IndexOf(separator);
+            fieldRepetition = (index==2);
+
             if (LastSeparator(index, data, separators))
             {
                 this.value = data;
@@ -90,13 +96,12 @@ namespace HL7Enumerator
             return Element( new SearchCriteriaElement[1] {criteria});  
         }
         /// <summary>
-        /// Returns the element corresponi
+        /// Returns the element corresponding to the set of search criteria.
         /// </summary>
         /// <param name="searchCriteria"></param>
         /// <returns></returns>
         public HL7Element Element(SearchCriteriaElement[] searchCriteria)
         {
-            // TODO: refactor as a Linq Expression??  
             HL7Element result = this;
             var fieldOffset = 0;
             foreach (SearchCriteriaElement criteria in searchCriteria)
@@ -107,7 +112,7 @@ namespace HL7Enumerator
                     foreach (HL7Element e in result)
                     {
                         // ensure the Element has the correct depth 
-                        var searchElement = (criteria.Repitition< 1) ? e : e[criteria.Repitition];
+                        var searchElement = (criteria.Repetition< 1) ? e : e[criteria.Repetition];
                         if (searchElement.Value != null && searchElement.Value.Equals(criteria.Value))
                         {
                             result =searchElement;
@@ -115,13 +120,16 @@ namespace HL7Enumerator
                         }
                     }
                     if (result == null) return null;
-                    //return this.FirstOrDefault(e => e.Value.Equals(criteria.Value));
                 }
                 else
                 {
                     var position = (criteria.Position < 1) ? 0 : criteria.Position;
                     result = (position <= result.Count) ? result[position-fieldOffset] : (position==1) ? result : null;
-                    if (result?.Count == 1 && result?.Value==null) result = result[0];
+                    if (result?.fieldRepetition==true) {
+                        var repetition = (criteria.Repetition < 1) ? 0 : criteria.Repetition - 1;
+                        result = (repetition < result.Count) ? result[repetition] :
+                                (result.Count == 0) ? result : null;
+                    } 
                 }
                 fieldOffset = 1;
             }
@@ -193,7 +201,7 @@ namespace HL7Enumerator
             // Locate required Segment
             if (criteria==null || criteria.Segment == null) return null;
             var segmentElements = AllSegments(criteria.Segment);
-            var targetRow = (criteria.SegmentRepitition > 0) ? criteria.SegmentRepitition - 1 : 0;
+            var targetRow = (criteria.SegmentRepetition > 0) ? criteria.SegmentRepetition - 1 : 0;
             if (targetRow > segmentElements.Count - 1) return new HL7Element(); // not found;
 
             if (!criteria.Field.Enabled) return segmentElements[targetRow];  //wants only the full segment
@@ -206,7 +214,7 @@ namespace HL7Enumerator
                 // Make Adjustment for MSH
                 newCriteria[i - 1] = (i==1 && criteria.elements[i].Enabled && makeHeaderAdjustment) ?
                     new SearchCriteriaElement(criteria.elements[i].Position-1, 
-                                              criteria.elements[i].Repitition,
+                                              criteria.elements[i].Repetition,
                                               criteria.elements[i].Value,
                                               true)
                     :

@@ -22,11 +22,11 @@ namespace TestHL7Enumerator
         }
 
         [TestMethod]
-        public void TestParseElement_segment_repetition_returns_Segment_and_repitition()
+        public void TestParseElement_segment_repetition_returns_Segment_and_repetition()
         {
             var searchElement = HL7Enumerator.SearchCriteriaElement.ParseElement("MSH[1]");
             Assert.AreEqual("MSH", searchElement.Value);
-            Assert.AreEqual(1, searchElement.Repitition);
+            Assert.AreEqual(1, searchElement.Repetition);
             Assert.AreEqual(0, searchElement.Position);
 
         }
@@ -36,7 +36,7 @@ namespace TestHL7Enumerator
         {
             var searchElement = HL7Enumerator.SearchCriteriaElement.ParseElement("12[2]");
             Assert.IsTrue(string.IsNullOrEmpty(searchElement.Value));
-            Assert.AreEqual(2, searchElement.Repitition);
+            Assert.AreEqual(2, searchElement.Repetition);
             Assert.AreEqual(12, searchElement.Position);
 
         }
@@ -55,7 +55,7 @@ namespace TestHL7Enumerator
             Assert.AreEqual(3, ThreeSearchElements.Length);
             Assert.AreEqual(1, ThreeSearchElements[1].Position);
             Assert.AreEqual(2, ThreeSearchElements[2].Position);
-            Assert.AreEqual(3, ThreeSearchElements[2].Repitition);
+            Assert.AreEqual(3, ThreeSearchElements[2].Repetition);
 
         }
 

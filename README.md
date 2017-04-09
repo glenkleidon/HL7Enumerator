@@ -1,8 +1,9 @@
 # HL7Enumerator
-C# Library for parsing and enumerating HL7 Messages (Using LINQ) 
+C# Library for parsing and enumerating HL7 Messages (with LINQ) 
 ## History
-This project was started as a simple conversation with my colleague who thought that of the avaialable C# HL7 parser libraries
-out there, none seem to be simple to use and were overly complex for the requirements.
+This project was started as a simple conversation with my colleague who thought that of the 
+available C# HL7 parser libraries out there, none seem to be simple to use and were 
+overly complex for the requirements.
 
 We wanted to be able to perform actions such as
 ```
