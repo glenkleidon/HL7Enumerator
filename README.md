@@ -15,7 +15,7 @@ We wanted to be able to perform actions such as
 
     Console.WriteLine("PD1 Segment: " + mesg.Element("PD1"));
 
-    //Now All Locate the Tests performed
+    //Now Locate all the Test names 
     var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("3.2").ToString());
 
     Console.WriteLine("Found Tests:");
@@ -23,7 +23,7 @@ We wanted to be able to perform actions such as
 
     Console.ReadLine();```
 
-    
+
 I agreed that the task should not be that hard to do.  And so the ball started rolling....
 
      
