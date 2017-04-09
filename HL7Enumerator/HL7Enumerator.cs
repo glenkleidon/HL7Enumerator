@@ -70,7 +70,10 @@ namespace HL7Enumerator
         /// Implicit Cast (efficiently) from HL7ELement to String
         /// </summary>
         /// <param name="element"></param>
-        public static implicit operator string(HL7Element element) => (element == null) ? "": element.ToString();
+        public static implicit operator string(HL7Element element)
+        {
+            return (element == null) ? "" : element.ToString();
+        }
         /// <summary>
         /// Implicitly Cast to and from string and HL7Element.
         /// Note: This is inherently slower than using a constructor directly because 
@@ -229,12 +232,15 @@ namespace HL7Enumerator
         /// new operator Or the ToString() methods.
         /// </summary>
         /// <param name="msgText"></param>
-        public static implicit operator HL7Message(string msgText) => new HL7Message(msgText) ;
-        public static implicit operator string(HL7Message msg) => (
-            (msg == null) ? "" : (
-                msg._segments.Count<1) ? string.Empty : 
+        public static implicit operator HL7Message(string msgText) { return new HL7Message(msgText); }
+        public static implicit operator string(HL7Message msg)
+        {
+              return (
+                (msg == null) ? "" : (
+                msg._segments.Count < 1) ? string.Empty :
                 msg._segments.ToString()
-            );
+                );
+        }
 
     }
 

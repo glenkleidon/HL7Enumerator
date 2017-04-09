@@ -23,7 +23,7 @@ namespace HL7Enumerator
             this.Skip = skip;
         }
 
-        public static implicit operator SearchCriteriaElement(string text) => ParseElement(text);
+        public static implicit operator SearchCriteriaElement(string text) { return ParseElement(text); }
 
         public static SearchCriteriaElement[] Parse(string criteria) {
             if (criteria.Length == 0) return new SearchCriteriaElement[0];

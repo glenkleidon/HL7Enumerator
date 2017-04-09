@@ -75,7 +75,7 @@ namespace HL7Enumerator
             this.Subcomponent = newcriteria.Subcomponent;
         }
 
-        public static implicit operator SearchCriteria(string criteria) => new SearchCriteria(criteria);
+        public static implicit operator SearchCriteria(string criteria) { return new SearchCriteria(criteria); }
 
     }
 }
