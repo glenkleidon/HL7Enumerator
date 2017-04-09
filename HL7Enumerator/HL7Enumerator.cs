@@ -6,7 +6,7 @@ using System.Text;
 namespace HL7Enumerator
 {
     public static class Constants {
-        public const string Separators = "\n|~^&";
+        public const string Separators = "\n|~^&\\"; // note: the ~ is deliberatly out of order...
         public static readonly string[] HeaderTypes = { "FHS", "BHS", "MSH" };
     }
 
@@ -98,20 +98,16 @@ namespace HL7Enumerator
         {
             // TODO: refactor as a Linq Expression??  
             HL7Element result = this;
+            var fieldOffset = 0;
             foreach (SearchCriteriaElement criteria in searchCriteria)
             {
-                var useRepetition = (this == result);
                 if (!criteria.Enabled) return result;
-                if (
-                      (criteria.Repitition > result.Count) ||
-                      (useRepetition && criteria.Position > result[criteria.Repitition].Count)
-                ) return null;
                 if (criteria.Value.Length > 0)
                 {
                     foreach (HL7Element e in result)
-                    { 
+                    {
                         // ensure the Element has the correct depth 
-                        var searchElement = (e.Count<1) ? e : e[criteria.Repitition];
+                        var searchElement = (criteria.Repitition< 1) ? e : e[criteria.Repitition];
                         if (searchElement.Value != null && searchElement.Value.Equals(criteria.Value))
                         {
                             result =searchElement;
@@ -124,11 +120,10 @@ namespace HL7Enumerator
                 else
                 {
                     var position = (criteria.Position < 1) ? 0 : criteria.Position;
-                    result = (useRepetition) ? result[criteria.Repitition][position]: 
-                        (position<=result.Count) ? result[position-1] :
-                        (position==1) ? result : null;
-                    if (result == null) return null;
+                    result = (position <= result.Count) ? result[position-fieldOffset] : (position==1) ? result : null;
+                    if (result?.Count == 1 && result?.Value==null) result = result[0];
                 }
+                fieldOffset = 1;
             }
             return (result==this) ? null: result;
         }
@@ -152,7 +147,7 @@ namespace HL7Enumerator
             string result = Constants.Separators;
             if (Constants.HeaderTypes.Any(h => h.Equals(segmentType)))
             {
-                result = '\n' + header.Substring(3, 3) + header[7];
+                result = ""+ '\n' + header[3] + header[5] + header[4] + header[7] + header[6];
                 var distinctResult = "";
                 foreach (char c in result) {
                     if (distinctResult.IndexOf(c) > 0)
@@ -184,8 +179,9 @@ namespace HL7Enumerator
         /// <param name="segmentType"></param>
         /// <returns></returns>
         public List<HL7Element> AllSegments(string segmentType) {
+            if (segmentType == null) return null;
             return Segments
-                   .FindAll(s => (s.Count > 0) && (s[0].Value.Equals(segmentType)));
+                   .FindAll(s => (s.Count > 0) && ( (s[0].Value!=null) && (s[0].Value.Equals(segmentType))));
         }
         /// <summary>
         /// Returns a specific field based on selection Criteria
@@ -194,15 +190,13 @@ namespace HL7Enumerator
         /// <param name="criteria"></param>
         /// <returns></returns>
         public HL7Element Element(SearchCriteria criteria) {
-            var segment = new HL7Element();
-
             // Locate required Segment
+            if (criteria==null || criteria.Segment == null) return null;
             var segmentElements = AllSegments(criteria.Segment);
             var targetRow = (criteria.SegmentRepitition > 0) ? criteria.SegmentRepitition - 1 : 0;
-            if (targetRow > segmentElements.Count-1) return segment; // not found
+            if (targetRow > segmentElements.Count - 1) return new HL7Element(); // not found;
 
-            segment.Add(segmentElements[targetRow]);
-            if (!criteria.Field.Enabled) return segment;  //wants only the full segment
+            if (!criteria.Field.Enabled) return segmentElements[targetRow];  //wants only the full segment
 
             // locate the required field, components or subcomponent
             var makeHeaderAdjustment = (Constants.HeaderTypes.Any(h => h.Equals(criteria.Segment)));
@@ -218,7 +212,7 @@ namespace HL7Enumerator
                     :
                     criteria.elements[i];
             }
-            return segment.Element(newCriteria);
+            return segmentElements[targetRow].Element(newCriteria);
         }
 
         /// <summary>

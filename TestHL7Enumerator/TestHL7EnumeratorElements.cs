@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace TestHL7Enumerator
 {
     [TestClass]
-    public class UnitTestHL7EnumeratorElements
+    public class TestHL7EnumeratorElements
     {
         private const string MSH = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" ;
         private const string PID = @"PID|||001677980||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|";
@@ -13,7 +13,11 @@ namespace TestHL7Enumerator
         private const string OBX1 = @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|";
         private const string OBX2 = @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
 
+        private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS";
+        private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C ~2 Test Street^^WODEN^ACT^2606^AUS^C";
+
         private const string Example1 = MSH + "\n" + PID + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
+        private const string Example2 = MSHA + "\n" + PIDA + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
 
         [TestMethod]
         public void TestHL7Enumerator_Element_Segment_Text_returns_Correct_segment()
@@ -70,6 +74,15 @@ namespace TestHL7Enumerator
             Assert.AreEqual("CERNER", OBX2field);
         }
 
+        [TestMethod]
+        public void TestHL7Enumerator_Element_Field_Text_returns_Correct_subComponent()
+        {
+            HL7Enumerator.HL7Message msg = Example2;
+            Assert.AreEqual(Example2, "" + msg);
+            string PIDfield = msg.Element("MSH.12.2.3");
+            Assert.AreEqual("ISO", PIDfield);
+
+        }
 
 
     }
