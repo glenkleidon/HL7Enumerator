@@ -11,7 +11,7 @@ We wanted to be able to perform actions such as
      console.writeline(format("Sending system {0}",SendingSystem));
      
      // Now LINQ query...
-     var AbnormalOBXs = mesg.AllSegments( o = > o.Element("OBX.8").startsWith("A"));
+     var AbnormalOBXs = mesg.AllSegments("OBX").FindAll( o = > o.Element("OBX.8").startsWith("A"));
 ```
 I agreed that the task should not be that hard to do.  And so the ball started rolling....
 
