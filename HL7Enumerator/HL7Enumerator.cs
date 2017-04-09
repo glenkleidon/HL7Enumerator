@@ -129,7 +129,7 @@ namespace HL7Enumerator
                 {
                     var position = (criteria.Position < 1) ? 0 : criteria.Position;
                     result = (position <= result.Count) ? result[position-fieldOffset] : (position==1) ? result : null;
-                    if (result?.fieldRepetition==true) {
+                    if (result!=null && result.fieldRepetition) {
                         var repetition = (criteria.Repetition < 1) ? 0 : criteria.Repetition - 1;
                         result = (repetition < result.Count) ? result[repetition] :
                                 (result.Count == 0) ? result : null;
