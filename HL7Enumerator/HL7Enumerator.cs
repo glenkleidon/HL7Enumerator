@@ -107,6 +107,7 @@ namespace HL7Enumerator
             foreach (SearchCriteriaElement criteria in searchCriteria)
             {
                 if (!criteria.Enabled) return result;
+                if (criteria.Skip) continue;
                 if (criteria.Value.Length > 0)
                 {
                     foreach (HL7Element e in result)

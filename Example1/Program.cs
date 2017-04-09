@@ -27,7 +27,7 @@ namespace Example1
             var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("3.2").ToString());
 
             Console.WriteLine("Found Tests:");
-            foreach (HL7Element obx in OBXTestNames) Console.WriteLine(string.Format("  {0}",obx));
+            foreach (string obx in OBXTestNames) Console.WriteLine(string.Format("  {0}",obx));
 
             Console.ReadLine();
         }
