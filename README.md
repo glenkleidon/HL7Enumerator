@@ -7,13 +7,23 @@ overly complex for the requirements.
 
 We wanted to be able to perform actions such as
 ```
-     HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T...
-     string SendingSystem = mesg.Element("MSH.3");
-     console.writeline(format("Sending system {0}",SendingSystem));
-     
-     // Now LINQ query...
-     var AbnormalOBXs = mesg.AllSegments("OBX").FindAll( o = > o.Element("OBX.8").startsWith("A"));
-```
+    HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\n" +
+        ...
+
+    string SendingSystem = mesg.Element("MSH.3");
+    Console.WriteLine(string.Format("Message received from Sending system {0}", SendingSystem));
+
+    Console.WriteLine("PD1 Segment: " + mesg.Element("PD1"));
+
+    //Now All Locate the Tests performed
+    var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("3.2").ToString());
+
+    Console.WriteLine("Found Tests:");
+    foreach (HL7Element obx in OBXTestNames) Console.WriteLine(string.Format("  {0}",obx));
+
+    Console.ReadLine();```
+
+    
 I agreed that the task should not be that hard to do.  And so the ball started rolling....
 
      
