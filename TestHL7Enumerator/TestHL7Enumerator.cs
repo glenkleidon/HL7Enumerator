@@ -111,13 +111,11 @@ namespace TestHL7Enumerator
         [TestMethod]
         public void TestHL7Element_Element_Segment_returns_correct_field()
         {
-            string segment = @"PID|||001677980||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|"+'\n';
-         /*   var element = new HL7Enumerator.HL7Message(segment);
+            string segment = @"PID|||001677980||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|";
+            HL7Enumerator.HL7Element element = segment;
             var field = element.Element("'001677980'");
-            note importantly this was a search for a field where the VALUE was PID, not where it was a PID segment...
+            //note importantly this was a search for a field where the VALUE was PID, not where it was a PID segment...
             Assert.AreEqual("001677980", "" + field); 
-            */
-
         }
 
     }
