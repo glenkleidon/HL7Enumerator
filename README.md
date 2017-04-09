@@ -8,7 +8,7 @@ We wanted to be able to perform actions such as
 ```
      HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T...
      string SendingSystem = mesg.Element("MSH.3");
-     console.writeline(format("Sending system {0}",SendingSystem);
+     console.writeline(format("Sending system {0}",SendingSystem));
      
      // Now LINQ query...
      var AbnormalOBXs = mesg.AllSegments( o = > o.Element("OBX.8").startsWith("A"));
