@@ -10,8 +10,8 @@ We wanted to be able to perform actions such as
     HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\n" +
         ...
 
-    string SendingSystem = mesg.Element("MSH.3");
-    Console.WriteLine(string.Format("Message received from Sending system {0}", SendingSystem));
+    string sendingSystem = mesg.Element("MSH.3");
+    Console.WriteLine(string.Format("Message received from Sending System {0}", sendingSystem));
 
     Console.WriteLine("PD1 Segment    : " + mesg.Element("PD1"));
     Console.WriteLine("2nd OBX Segment: " + mesg.Element("OBX[2]"));
@@ -29,4 +29,155 @@ We wanted to be able to perform actions such as
 
 I agreed that the task should not be that hard to do.  And so the ball started rolling....
 
-     
+## Class Structure 
+
+The library deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
+is supported through LINQ.
+
+The library contains 2 operational classes:   
+   + *class* **HL7Message** - Top Level element representing a single message
+   + *class* **HL7Element** - Any message or part of a message (and the base class of *HL7Message*)
+
+2 helper classes relating to Search Criteria: 
+   + *class* **SearchCriteria** - A set of criteria representing the full path to a **HL7Element**
+   + *class* **SearchCriteriaElement** - A specific element within the search path (base calss of *SearchCriteria*)
+
+and a single Constants Class:
+   + *class* Constants 
+
+Each of the 4 main classes implement implicit casting between the class and *string*.  This makes it possible to 
+ignore the Search Criteria classes for most operations - criteria is implicitly converted from the text version.  
+
+## Methods
+
+The **HL7Element** class is a descendant of a generic list of *itself* (IE a _**List\<HL7Element\>**_) and therefore 
+inherits the *IEnumerable* interface.  This makes the class automatically support LINQ queries.  
+
+There is only 1 pubic method : *Element* which provides access to specific HL7 (sub) elements.  The method is typically called from 
+the HL7within a Linq query to access elements during enumeration.  
+
+It is not usually necessary to call the *Element* method of **HL7Element** directly.  It is more common to use the method
+by calling the overridden version of *Element* from the **HL7Message** class.
+
+The **HL7Message** class has one additionaly method *AllSegments* which returns a generic list of *HL7Element* containing all segments 
+of a particular type. (eg return all OBX records)  This is not strictly required as it simply encapsulates a LINQ query, although it
+is convenient.
+
+## Properties
+
+Again, to emphasise the simplicity of the class, there are very few properties on the classes.
+
+### HL7Message Properties
+   + _HL7Element **Segments**_ Provides access to all the HL7 Segments as a Single Element.
+   + _string **Separators**_ a represents the characters used as delimiters in the message (Note: the order of these is different to 
+      to those seen in the actual messae itself).
+
+### HL7MessageElement Properties
+   + _HL7Element **Parent**_ A reference to the Parent Element (eg the Parent of a HL7 *Field* Element is a HL7 *Segment* Element). This
+     property can be use to ascend the tree of Elements to the Message level.
+   + _char **Separator**_ The character used to delimit the element when it was created.
+   + _string **Value**_ a (nullable) string representing the specific data held in the element. IE Say MSH.9 contains message type 
+     \"ORU\^R01\" - This consisting of two elements: Element1.Value = \"ORU\" and Element2.Value = \"R01\"
+
+### SearchCriteria Properties
+
+   + _string **Segment**_  - The 3 Character text of the target Segment (eg MSH)
+   + _int **SegmentRepetition**_ - The (1 based) reference to the target occurrence of the segment (eg 2 means find the SECOND occurrence of the segment)
+   + _SearchCriteriaElement **Field**_ - A reference to the search criteria for the HL7 Field level element.
+   + _SearchCriteriaElement **Component**_ - A reference to the search criteria for the HL7 Component level element. 
+   + _SearchCriteriaElement **Subcomponent**_ - A reference to the search criteria for the HL7 SubComponent level element.
+
+### SearchCriteriaElement Properties
+
+   + _readonly int **Repetition**_ Indicates the target (1 based) repeating Field replicate 
+   + _readonly int **Position**_ Indicates the target (1 based) element 
+   + _bool **Enabled** Indicate that this criteria is in force (the parsing engine will abort at the FIRST disabled search criteria)
+   + _bool **Skip** - The "THIS" indicator used to mean "* at the current level *" eg *.2 find the SECOND element at this level
+   + _string **Value** - The TEXT to search for (eg SEGMENT NAME or Element Value)
+
+*Reminder: The SearchCriteria classes for the most part can be ignored as they are primarily used to encapsulate the implicit casting of
+the string path sequence by the parsing engine. There may be low level use but specific instantiation and manipulation of the SearchCriteria is 
+not recommended.**
+
+## Search Criteria Format
+
+The search criteria at the **HL7Message** level is of the following format
+
+```<Segment>[['['<replicate>']'][.|/]<Field>['['<replicate>']'][.|/]<Component>[.|/]<SubComponent>]```
+
+*All of Fields after Segment are optional*
+
+For example: 
+
+   `OBR[2]/16[3]/2/1` alternatively `OBR[2].16[3].2.1` or just `OBR[2].16[3].2` 
+
+will return the *Surname* of the *3rd* \'Ordering Provider\' in the *2nd* OBR16 encountered in the message.
+
+
+
+## Implicit *string* Casting
+
+There is no need to create specific instances of Search Criteria classes.  The library will implicitly cast string base search criteria into an array of SearchCriteriaElements.    
+Eg 
+
+``` 
+     Console.WriteLine("PD1 Field 4: "+mesg.Element("pd1.4") ); 
+```
+
+is exactly equivalent to the very long winded version:
+
+```  
+     SearchCriteria pd1SearchCriteria = new SearchCriteria();
+     pd1SearchCriteria.Segment = "PD1";
+     pd1SearchCriteria.SegmentRepitiion = 1;
+     pd1SearchCriteria.Field = new SearchCriteriaElement(4);
+      
+     HL7Element pd1Element = mesg.Element(pd1SearchCriteria);
+
+     Console.WriteLine(string.Format("PD1 Field 4: {0},pd1Element.ToString()));
+```
+
+You can choose to return HL7Elements from the message as *string* or *HL7Element* classes and use them interchangably.
+
+## LINQ Queries
+
+## Composing HL7 Message
+
+While it is not the intention for this library to compose HL7 Messages, it can be used to do so.  Future extension methods will no doubt be created to support 
+cleaner HL7 Composition, but it is possible to compose elements and join them together to create HL7 Messages.  This can be done with a combination of string
+elements or by creating instances of HL7Elements and "Adding" them to the Inherent List<HL7Element> eg
+```  
+            // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
+            HL7Element ptId = new HL7Element("1234567890", '^', "^&\\");
+            HL7Element ptLastName = new HL7Element("LAST", '|', "^&\\");
+            HL7Element ptFirstName   = new HL7Element("FIRST", '|');
+            HL7Element ptInitial     = new HL7Element("M", '|');
+            HL7Element EmptyComponent= new HL7Element("", '|');
+            HL7Element npi           = new HL7Element("NPI", '|');
+            HL7Element patient       = new HL7Element(null, '|');
+            patient.Add(ptId);
+            patient.Add(ptLastName);
+            patient.Add(ptFirstName);
+            patient.Add(ptInitial);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(npi);
+
+            HL7Element EmptyField    = new HL7Element("",'|');
+            HL7Element pd1 = new HL7Element("PD1", '\n');
+            pd1.Add(EmptyField);
+            pd1.Add(EmptyField);
+            pd1.Add(EmptyField);
+            pd1.Add(patient);
+
+            Console.WriteLine(pd1);
+```
+
+
+
+
+
+
+
