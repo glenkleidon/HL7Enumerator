@@ -23,11 +23,41 @@ namespace Example1
 
             Console.WriteLine("PD1 Segment: " + mesg.Element("PD1"));
 
-            //Now All Locate the Tests performed
+           /* //Now All Locate the Tests performed
             var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("3.2").ToString());
 
             Console.WriteLine("Found Tests:");
             foreach (string obx in OBXTestNames) Console.WriteLine(string.Format("  {0}",obx));
+            */
+
+            //Compose an Element - need some extension methods to handle this better
+            // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
+            HL7Element ptId = new HL7Element("1234567890", '^', "^&\\");
+            HL7Element ptLastName = new HL7Element("LAST", '|', "^&\\");
+            HL7Element ptFirstName   = new HL7Element("FIRST", '|');
+            HL7Element ptInitial     = new HL7Element("M", '|');
+            HL7Element EmptyComponent= new HL7Element("", '|');
+            HL7Element npi           = new HL7Element("NPI", '|');
+            HL7Element patient       = new HL7Element(null, '|');
+            patient.Add(ptId);
+            patient.Add(ptLastName);
+            patient.Add(ptFirstName);
+            patient.Add(ptInitial);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(EmptyComponent);
+            patient.Add(npi);
+
+            HL7Element EmptyField    = new HL7Element("",'|');
+            HL7Element pd1 = new HL7Element("PD1", '\n');
+            pd1.Add(EmptyField);
+            pd1.Add(EmptyField);
+            pd1.Add(EmptyField);
+            pd1.Add(patient);
+
+            Console.WriteLine(pd1);
+
 
             Console.ReadLine();
         }
