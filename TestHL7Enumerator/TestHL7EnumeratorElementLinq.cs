@@ -25,11 +25,15 @@ namespace TestHL7Enumerator
         public void TestHL7Enumerator_Element_Simple_Linq_expression_returns_rows()
         {
             HL7Enumerator.HL7Message mesg = Example1;
-            var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("3.2").ToString());
+            var OBXTestNames = mesg.AllSegments("OBX").Select( o => o.Element("*.3.2").ToString() );
             Console.WriteLine("Found Tests:");
-            foreach (string obx in OBXTestNames) Console.WriteLine(string.Format("  {0}", obx));
-
-            Console.ReadLine();
+            var i = 0;
+            string[] expected = { "Glucose Lvl", "Alanine Aminotransferase" };
+            foreach (string obx in OBXTestNames)
+            {
+                Console.WriteLine(string.Format("  {0}", obx));
+                Assert.AreEqual(expected[i++], obx);
+            }
         }
     }
 }

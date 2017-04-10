@@ -60,7 +60,7 @@ namespace HL7Enumerator
                 }
             }
 
-            if (result.Segment.Length == 0) throw new ArgumentException("Segment Type Expected");
+            if (result.Segment.Length == 0 && !result.elements[0].Skip) throw new ArgumentException("Segment type or wildcard expected");
             return result;
         }
 
@@ -68,11 +68,13 @@ namespace HL7Enumerator
         public SearchCriteria(string criteria)
         {
             var newcriteria = Parse(criteria);
+            /*this.elements = newcriteria.elements;*/
             this.Segment = newcriteria.Segment;
             this.SegmentRepetition = newcriteria.SegmentRepetition;
             this.Field = newcriteria.Field;
             this.Component = newcriteria.Component;
-            this.Subcomponent = newcriteria.Subcomponent;
+            this.Subcomponent = newcriteria.Subcomponent; 
+            this.elements[0].Skip = newcriteria.elements[0].Skip;
         }
 
         public static implicit operator SearchCriteria(string criteria) { return new SearchCriteria(criteria); }

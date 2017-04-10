@@ -30,6 +30,33 @@ namespace HL7Enumerator
             return (searchChars.Length <= 1) || (data.IndexOfAny(searchChars) < 0);
 
         }
+        /// <summary>
+        /// Carefully escape the separators ensuring that we dont escape the header rows
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="separator"></param>
+        /// <returns></returns>
+        private static string ApplyEscape(string text, char separator, string separators) {
+            var escapeChar = separators[separators.Length - 1];
+            string escapeSequence = "" + escapeChar + separator;
+            char char1 = Convert.ToChar(1);
+            //check for header rows
+            string headerSegmentPrefix = ""; 
+            if (separator.Equals('\n')) {
+                string segmentType = text.Substring(0, 3);
+                if (Constants.HeaderTypes.Any(s => s.Equals(segmentType))) {
+                    headerSegmentPrefix = text.Substring(0, 8);
+                    text = text.Substring(8);
+                };
+            }
+            ////
+            return headerSegmentPrefix+text.Replace(escapeSequence, char1.ToString());
+        }
+
+        private static string RemoveEscape(string text, char separator) {
+            return text.Replace((char)1, separator);
+        }
+
         public HL7Element() { }
 
         public HL7Element(string data, char separator, string separators = Constants.Separators, HL7Element owner = null)
@@ -46,11 +73,16 @@ namespace HL7Enumerator
                 return;
             }
             var nextChar = separators[index + 1];
-            var subElements = data.Split(separator);
+            data = ApplyEscape(data, separator, separators);
+            var escapeChar = separators[separators.Length - 1];
+            string escapeSequence = ""+ escapeChar+ separator;
+            char char1 = Convert.ToChar(1);
+            var subElements = data.Replace(escapeSequence, char1.ToString()).Split(separator);
+
             if (index == 1 && owner != null) owner.value = subElements[0];
             foreach (string s in subElements)
             {
-                this.Add(new HL7Element(s, nextChar, separators, this));
+                this.Add(new HL7Element(RemoveEscape(s, escapeChar), nextChar, separators, this));
             }
         }
 
@@ -94,9 +126,9 @@ namespace HL7Enumerator
             if (!found) separator = '\n';
             return new HL7Element(text, separator);
         }
-        public HL7Element Element(SearchCriteriaElement criteria)
-        {
-            return Element( new SearchCriteriaElement[1] {criteria});  
+        public HL7Element Element(string criteria)
+        { 
+            return Element(new SearchCriteria(criteria).elements);  
         }
         /// <summary>
         /// Returns the element corresponding to the set of search criteria.

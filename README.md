@@ -137,42 +137,55 @@ is exactly equivalent to the very long winded version:
      Console.WriteLine(string.Format("PD1 Field 4: {0},pd1Element.ToString()));
 ```
 
-You can choose to return HL7Elements from the message as *string* or *HL7Element* classes and use them interchangably.
+You can choose to return Elements from a *HL7Message* instance as *string* or *HL7Element* classes and use them interchangably.
 
 ## LINQ Queries
 
+The Base _class **HL7Element**_ is a List\<HL7Element\> which inherits the *IEnumerable* interface for Generic List.
+It is therefore possible to apply LINQ expressions to A message or an Element within the Message.
+
+The *Segments* property is a **HL7MessageElement** which contains all the Segments of the message.
+
+For convenience the method **HL7Message.AllSegments**  returns a *reduced* generic List of segments of a 
+particular type which if often a sensible starting point.  *[Note: this is not strictly required
+within the class and probably should be re-implemented an extension method]*
+
+Using the implicit string cast of SearchCriteria makes LINQ expressions relatively clean. 
+For example, the following expression returns all (obx) Test names in the message.
+
+```var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("*.3.2").ToString());```
+
+Note the use of the * wildcard ("This" operater) to  of the indicate the current object 
+ 
 ## Composing HL7 Message
 
 While it is not the intention for this library to compose HL7 Messages, it can be used to do so.  Future extension methods will no doubt be created to support 
 cleaner HL7 Composition, but it is possible to compose elements and join them together to create HL7 Messages.  This can be done with a combination of string
 elements or by creating instances of HL7Elements and "Adding" them to the Inherent List<HL7Element> eg
 ```  
-            // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
-            HL7Element ptId = new HL7Element("1234567890", '^', "^&\\");
-            HL7Element ptLastName = new HL7Element("LAST", '|', "^&\\");
-            HL7Element ptFirstName   = new HL7Element("FIRST", '|');
-            HL7Element ptInitial     = new HL7Element("M", '|');
-            HL7Element EmptyComponent= new HL7Element("", '|');
-            HL7Element npi           = new HL7Element("NPI", '|');
-            HL7Element patient       = new HL7Element(null, '|');
-            patient.Add(ptId);
-            patient.Add(ptLastName);
-            patient.Add(ptFirstName);
-            patient.Add(ptInitial);
-            patient.Add(EmptyComponent);
-            patient.Add(EmptyComponent);
-            patient.Add(EmptyComponent);
-            patient.Add(EmptyComponent);
-            patient.Add(npi);
+    //Compose a Segment - create extension methods to this more cleanly
+    // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
 
-            HL7Element EmptyField    = new HL7Element("",'|');
-            HL7Element pd1 = new HL7Element("PD1", '\n');
-            pd1.Add(EmptyField);
-            pd1.Add(EmptyField);
-            pd1.Add(EmptyField);
-            pd1.Add(patient);
+    HL7Element pd1 = new HL7Element(null, '|');
+    pd1.Add(new HL7Element("PD1", '~'));
+    pd1.Add(new HL7Element("", '~'));
+    pd1.Add(new HL7Element("", '~'));
+    pd1.Add(new HL7Element("", '~'));
+    HL7Element patientField = new HL7Element(null, '~');
+    pd1.Add(patientField);
+    HL7Element patient = new HL7Element(null, '^');
+    patientField.Add(patient);
+    patient.Add(new HL7Element("1234567890", '&' ));
+    patient.Add(new HL7Element("LAST", '&'));
+    patient.Add(new HL7Element("FIRST", '&'));
+    patient.Add(new HL7Element("M", '&'));
+    patient.Add(new HL7Element("", '&'));
+    patient.Add(new HL7Element("", '&'));
+    patient.Add(new HL7Element("", '&'));
+    patient.Add(new HL7Element("", '&'));
+    patient.Add(new HL7Element("NPI", '&'));
 
-            Console.WriteLine(pd1);
+    Console.WriteLine("Composed PD1: " + pd1);
 ```
 
 

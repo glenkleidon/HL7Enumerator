@@ -32,7 +32,7 @@ namespace TestHL7Enumerator.Extensions
         public void TestSearchCriteria_implicit_skip_string_cast_returns_an_instance()
         {
             HL7Enumerator.SearchCriteria searchCriteria = "*.3.2";
-            Assert.IsNull(searchCriteria.Segment);
+            Assert.IsTrue(string.IsNullOrEmpty(searchCriteria.Segment));
             Assert.AreEqual(3, searchCriteria.Field.Position);
             Assert.AreEqual(2, searchCriteria.Component.Position);
         }
