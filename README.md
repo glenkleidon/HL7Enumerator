@@ -31,7 +31,7 @@ I agreed that the task should not be that hard to do.  And so the ball started r
 
 ## Class Structure 
 
-The library deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
+The library is deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
 is supported through LINQ.
 
 The library contains 2 operational classes:   
@@ -91,9 +91,9 @@ Again, to emphasise the simplicity of the class, there are very few properties o
 
    + _readonly int **Repetition**_ Indicates the target (1 based) repeating Field replicate 
    + _readonly int **Position**_ Indicates the target (1 based) element 
-   + _bool **Enabled** Indicate that this criteria is in force (the parsing engine will abort at the FIRST disabled search criteria)
-   + _bool **Skip** - The "THIS" indicator used to mean "* at the current level *" eg *.2 find the SECOND element at this level
-   + _string **Value** - The TEXT to search for (eg SEGMENT NAME or Element Value)
+   + _bool **Enabled**_ Indicate that this criteria is in force (the parsing engine will abort at the FIRST disabled search criteria)
+   + _bool **Skip**_ - The "THIS" indicator used to mean "* at the current level *" eg *.2 find the SECOND element at this level
+   + _string **Value**_ - The TEXT to search for (eg SEGMENT NAME or Element Value)
 
 *Reminder: The SearchCriteria classes for the most part can be ignored as they are primarily used to encapsulate the implicit casting of
 the string path sequence by the parsing engine. There may be low level use but specific instantiation and manipulation of the SearchCriteria is 
