@@ -1,5 +1,5 @@
 # HL7Enumerator
-C# Library for parsing and enumerating HL7 Messages (with LINQ) 
+C# Library for parsing and enumerating HL7 Messages with LINQ support. 
 ## History
 This project was started as a simple conversation with my colleague who thought that of the 
 available C# HL7 parser libraries out there, none seem to be simple to use and were 
@@ -163,7 +163,7 @@ While it is not the intention for this library to compose HL7 Messages, it can b
 cleaner HL7 Composition, but it is possible to compose elements and join them together to create HL7 Messages.  This can be done with a combination of string
 elements or by creating instances of HL7Elements and "Adding" them to the Inherent List<HL7Element> eg
 ```  
-    //Compose a Segment - create extension methods to this more cleanly
+    //Compose a Segment - create extension methods to do this more cleanly
     // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
 
     HL7Element pd1 = new HL7Element(null, '|');
