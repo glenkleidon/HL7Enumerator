@@ -14,10 +14,13 @@ namespace TestHL7Enumerator
         private const string OBX2 = @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
 
         private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
+        private const string MSHB = @"MSH|^~\&|MERIDIAN|Section1\\3\&4|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
         private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
+        private const string PIDB = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||CRN 1st \& 2nd Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
 
         private const string Example1 = MSH + "\n" + PID + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
         private const string Example2 = MSHA + "\n" + PIDA + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
+        private const string Example3 = MSHB + "\n" + PIDB + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
 
         [TestMethod]
         public void TestHL7Enumerator_Element_Segment_Text_returns_Correct_segment()
@@ -100,10 +103,27 @@ namespace TestHL7Enumerator
 
             string EmptyMSHfield = msg.Element("MSH/18[3]");
             Assert.AreEqual(string.Empty, EmptyMSHfield);
-
-
-
         }
+
+        [TestMethod]
+        public void TestSearchCriteria_Element_with_Escape_returns_correct_field()
+        {
+            HL7Enumerator.HL7Message msg = Example3;
+            Assert.AreEqual(PIDB, "" + msg.Element("PID"));
+
+            Assert.AreEqual(@"CRN 1st \& 2nd Test Street", "" + msg.Element("PID.11.1"));
+        }
+
+        [TestMethod]
+        public void TestSearchCriteria_MSH_Element_with_Escape_returns_correct_field()
+        {
+            HL7Enumerator.HL7Message msg = Example3;
+            Assert.AreEqual(MSHB, "" + msg.Element("MSH"));
+
+            Assert.AreEqual(@"Section1\\3\&4", "" + msg.Element("MSH.4"));
+        }
+
+
 
     }
 }

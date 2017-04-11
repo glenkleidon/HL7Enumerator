@@ -6,8 +6,16 @@ using System.Text;
 namespace HL7Enumerator
 {
     public static class Constants {
-        public const string Separators = "\n|~^&\\"; // note: the ~ is deliberatly out of order...
+        public const string MSHSeparators = "|^~\\&";
+        public const string Separators =  "\n|~^&\\"; // note: the ~ is deliberatly out of order...
         public static readonly string[] HeaderTypes = { "FHS", "BHS", "MSH" };
+        public static string ToMSHSeparators(string separators = Separators) {
+            // reorder separators to MSH order
+            if (string.IsNullOrEmpty(separators) || separators.Equals(Separators)) return MSHSeparators;
+            string sep=separators;
+            if (separators[0].Equals('\n')) sep = separators.Substring(1);
+            return (new char[]  {sep[0], sep[2], sep[1],sep[4], sep[3]}).ToString();
+        }
     }
 
     public class HL7Element : List<HL7Element> {
@@ -30,8 +38,9 @@ namespace HL7Enumerator
             return (searchChars.Length <= 1) || (data.IndexOfAny(searchChars) < 0);
 
         }
+
         /// <summary>
-        /// Carefully escape the separators ensuring that we dont escape the header rows
+        /// Carefully escape the separators ensuring that we dont escape the segment string
         /// </summary>
         /// <param name="text"></param>
         /// <param name="separator"></param>
@@ -39,18 +48,12 @@ namespace HL7Enumerator
         private static string ApplyEscape(string text, char separator, string separators) {
             var escapeChar = separators[separators.Length - 1];
             string escapeSequence = "" + escapeChar + separator;
-            char char1 = Convert.ToChar(1);
-            //check for header rows
-            string headerSegmentPrefix = ""; 
-            if (separator.Equals('\n')) {
-                string segmentType = text.Substring(0, 3);
-                if (Constants.HeaderTypes.Any(s => s.Equals(segmentType))) {
-                    headerSegmentPrefix = text.Substring(0, 8);
-                    text = text.Substring(8);
-                };
-            }
-            ////
-            return headerSegmentPrefix+text.Replace(escapeSequence, char1.ToString());
+            string escapeChar1 = ""+escapeChar+Convert.ToChar(1);
+            
+            // is this the separator sequence?
+            if (Constants.ToMSHSeparators(separators).Substring(1).Equals(text)) return text;
+
+            return text.Replace(escapeSequence, escapeChar1);
         }
 
         private static string RemoveEscape(string text, char separator) {
@@ -74,15 +77,12 @@ namespace HL7Enumerator
             }
             var nextChar = separators[index + 1];
             data = ApplyEscape(data, separator, separators);
-            var escapeChar = separators[separators.Length - 1];
-            string escapeSequence = ""+ escapeChar+ separator;
-            char char1 = Convert.ToChar(1);
-            var subElements = data.Replace(escapeSequence, char1.ToString()).Split(separator);
+            var subElements = data.Split(separator);
 
             if (index == 1 && owner != null) owner.value = subElements[0];
             foreach (string s in subElements)
             {
-                this.Add(new HL7Element(RemoveEscape(s, escapeChar), nextChar, separators, this));
+                this.Add(new HL7Element(RemoveEscape(s, separator), nextChar, separators, this));
             }
         }
 

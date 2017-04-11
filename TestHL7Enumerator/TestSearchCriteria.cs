@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TestHL7Enumerator.Extensions
+namespace TestHL7Enumerator
 {
     [TestClass]
     public class TestSearchCriteria
@@ -36,7 +36,5 @@ namespace TestHL7Enumerator.Extensions
             Assert.AreEqual(3, searchCriteria.Field.Position);
             Assert.AreEqual(2, searchCriteria.Component.Position);
         }
-
-
     }
 }
