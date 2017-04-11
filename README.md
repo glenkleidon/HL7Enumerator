@@ -69,8 +69,8 @@ Again, to emphasise the simplicity of the class, there are very few properties o
 
 ### HL7Message Properties
    + _HL7Element **Segments**_ Provides access to all the HL7 Segments as a Single Element.
-   + _string **Separators**_ a represents the characters used as delimiters in the message (Note: the order of these is different to 
-      to those seen in the actual messae itself).
+   + _string **Separators**_ a represents the characters used as delimiters in the message.  Note: the order of these is different to 
+      those seen in the actual message itself.  There is a helper method _Constants.ToMSHSeparators_ to convert from class format to Message format.
 
 ### HL7MessageElement Properties
    + _HL7Element **Parent**_ A reference to the Parent Element (eg the Parent of a HL7 *Field* Element is a HL7 *Segment* Element). This
@@ -103,7 +103,7 @@ not recommended.**
 
 The search criteria at the **HL7Message** level is of the following format
 
-```<Segment>[['['<replicate>']'][.|/]<Field>['['<replicate>']'][.|/]<Component>[.|/]<SubComponent>]```
+```<Segment>.[['['<replicate>']']|*[.|/]<Field>['['<replicate>']'][.|/]<Component>[.|/]<SubComponent>]```
 
 *All of Fields after Segment are optional*
 
@@ -142,20 +142,21 @@ You can choose to return Elements from a *HL7Message* instance as *string* or *H
 ## LINQ Queries
 
 The Base _class **HL7Element**_ is a List\<HL7Element\> which inherits the *IEnumerable* interface for Generic List.
-It is therefore possible to apply LINQ expressions to A message or an Element within the Message.
+It is therefore possible to apply LINQ expressions to a message or an element within the message.
 
-The *Segments* property is a **HL7MessageElement** which contains all the Segments of the message.
+The *Segments* property is a **HL7MessageElement** which contains all the segments of the message.
 
 For convenience the method **HL7Message.AllSegments**  returns a *reduced* generic List of segments of a 
 particular type which if often a sensible starting point.  *[Note: this is not strictly required
 within the class and probably should be re-implemented an extension method]*
 
-Using the implicit string cast of SearchCriteria makes LINQ expressions relatively clean. 
+Using the implicit string cast of **SearchCriteria** makes LINQ expressions relatively clean. 
 For example, the following expression returns all (obx) Test names in the message.
 
 ```var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("*.3.2").ToString());```
 
-Note the use of the * wildcard ("This" operater) to  of the indicate the current object 
+Note the use of the * wildcard ("this") operater to of the indicate the current object where there may be some ambiguity to at which level
+the element resides.
  
 ## Composing HL7 Message
 
@@ -187,7 +188,10 @@ elements or by creating instances of HL7Elements and "Adding" them to the Inhere
 
     Console.WriteLine("Composed PD1: " + pd1);
 ```
-
+As you can see this will work, however the use of the Field delimiters seems a little obscure.  In the future an extension method could be used to 
+make the style a little cleaner.  eg ``` pd1.AddField(position, FieldContent); 
+FieldContent.AddComponent(position,"1234567890","Last","First"...);``` 
+might be sensible extensions.
 
 
 
