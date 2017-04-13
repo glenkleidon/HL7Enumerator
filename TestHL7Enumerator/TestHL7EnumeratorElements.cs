@@ -18,9 +18,9 @@ namespace TestHL7Enumerator
         private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
         private const string PIDB = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||CRN 1st \& 2nd Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
 
-        private const string Example1 = MSH + "\n" + PID + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
-        private const string Example2 = MSHA + "\n" + PIDA + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
-        private const string Example3 = MSHB + "\n" + PIDB + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
+        private const string Example1 = MSH + "\r" + PID + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
+        private const string Example2 = MSHA + "\r" + PIDA + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
+        private const string Example3 = MSHB + "\r" + PIDB + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
 
         [TestMethod]
         public void TestHL7Enumerator_Element_Segment_Text_returns_Correct_segment()

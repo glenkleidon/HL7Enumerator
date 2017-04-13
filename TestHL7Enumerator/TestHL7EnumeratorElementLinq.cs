@@ -18,8 +18,8 @@ namespace TestHL7Enumerator
         private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
         private const string PIDA = @"PID|1||||SMITH^Jessica^^^^^L||19700201|F|||1 Test Street^^WODEN^ACT^2606^AUS^C~2 Test Street^^WODEN^ACT^2606^AUS^C";
 
-        private const string Example1 = MSH + "\n" + PID + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
-        private const string Example2 = MSHA + "\n" + PIDA + "\n" + PD1 + "\n" + OBR + "\n" + OBX1 + "\n" + OBX2 + "\n";
+        private const string Example1 = MSH + "\r" + PID + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
+        private const string Example2 = MSHA + "\r" + PIDA + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
 
         [TestMethod]
         public void TestHL7Enumerator_Element_Simple_Linq_expression_returns_rows()

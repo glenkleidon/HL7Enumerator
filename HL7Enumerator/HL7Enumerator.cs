@@ -7,13 +7,13 @@ namespace HL7Enumerator
 {
     public static class Constants {
         public const string MSHSeparators = "|^~\\&";
-        public const string Separators =  "\n|~^&\\"; // note: the ~ is deliberatly out of order...
+        public const string Separators =  "\r|~^&\\"; // note: the ~ is deliberatly out of order...
         public static readonly string[] HeaderTypes = { "FHS", "BHS", "MSH" };
         public static string ToMSHSeparators(string separators = Separators) {
             // reorder separators to MSH order
             if (string.IsNullOrEmpty(separators) || separators.Equals(Separators)) return MSHSeparators;
             string sep=separators;
-            if (separators[0].Equals('\n')) sep = separators.Substring(1);
+            if (separators[0].Equals('\r')) sep = separators.Substring(1);
             return (new char[]  {sep[0], sep[2], sep[1],sep[4], sep[3]}).ToString();
         }
     }
@@ -123,7 +123,7 @@ namespace HL7Enumerator
                     break;
                 }
             }
-            if (!found) separator = '\n';
+            if (!found) separator = '\r';
             return new HL7Element(text, separator);
         }
         public HL7Element Element(string criteria)
@@ -191,7 +191,7 @@ namespace HL7Enumerator
             string result = Constants.Separators;
             if (Constants.HeaderTypes.Any(h => h.Equals(segmentType)))
             {
-                result = ""+ '\n' + header[3] + header[5] + header[4] + header[7] + header[6];
+                result = ""+ '\r' + header[3] + header[5] + header[4] + header[7] + header[6];
                 var distinctResult = "";
                 foreach (char c in result) {
                     if (distinctResult.IndexOf(c) > 0)
@@ -215,7 +215,7 @@ namespace HL7Enumerator
             var mesgHeader = mesg.Substring(0, 8);
             if (mesgHeader.Length < 8) throw new ArgumentException("Not a valid HL7 message");
 
-            _segments = new HL7Element(mesg, '\n', ValidatedSeparators(mesgHeader), null);
+            _segments = new HL7Element(mesg, '\r', ValidatedSeparators(mesgHeader), null);
         }
         /// <summary>
         /// Returns all segments matching the segment type as an array of 
