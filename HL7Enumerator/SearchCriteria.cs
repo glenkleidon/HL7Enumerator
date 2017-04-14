@@ -41,7 +41,7 @@ namespace HL7Enumerator
 
         public SearchCriteriaElement Field { get { return elements[1]; } set { elements[1] = value; } }
         public SearchCriteriaElement Component { get { return elements[2]; } set { elements[2] = value; } }
-        public SearchCriteriaElement Subcomponent { get { return elements[3]; } set { elements[3] = value; } }
+        public SearchCriteriaElement SubComponent { get { return elements[3]; } set { elements[3] = value; } }
 
         private static SearchCriteria Parse(string criteria)
         {
@@ -68,16 +68,87 @@ namespace HL7Enumerator
         public SearchCriteria(string criteria)
         {
             var newcriteria = Parse(criteria);
-            /*this.elements = newcriteria.elements;*/
             this.Segment = newcriteria.Segment;
             this.SegmentRepetition = newcriteria.SegmentRepetition;
             this.Field = newcriteria.Field;
             this.Component = newcriteria.Component;
-            this.Subcomponent = newcriteria.Subcomponent; 
+            this.SubComponent = newcriteria.SubComponent; 
             this.elements[0].Skip = newcriteria.elements[0].Skip;
         }
 
         public static implicit operator SearchCriteria(string criteria) { return new SearchCriteria(criteria); }
 
+    }
+
+    public class HL7Reference : ICloneable
+    {
+        private SearchCriteria reference = new SearchCriteria();
+        public string Segment
+        {
+            get { return reference.Segment; }
+            set {
+                if (value != null || value.Length < 3) 
+                {
+                    reference.Segment = "";
+                } else 
+                {
+                    reference.Segment = value.Substring(0, 3).ToUpper();
+                }
+            }
+        }
+        public int SegmentIndex {
+            get { return reference.SegmentRepetition; }
+            set { reference.SegmentRepetition = value; }
+        }
+
+        public int Field
+        {
+            get { return reference.Field.Position; }
+            set { reference.Field = new SearchCriteriaElement(value, reference.Field.Repetition); }
+        }
+
+        public int FieldRepetition {
+            get { return reference.Field.Repetition; }
+            set { reference.Field = new SearchCriteriaElement(reference.Field.Position, value); }
+        }
+
+        public int Component
+        {
+            get { return reference.Component.Position; }
+            set { reference.Component = new SearchCriteriaElement(value, 0); }
+        }
+
+        public int SubComponent
+        {
+            get { return reference.SubComponent.Position; }
+            set { reference.SubComponent = new SearchCriteriaElement(value, 0); }
+        }
+        public HL7Reference() {
+            Segment = "";
+        }
+        public HL7Reference(string referenceString)
+        {
+            reference = referenceString;
+        }
+
+        public static implicit operator HL7Reference(string referenceString) {
+            return new HL7Reference(referenceString);
+        }
+
+        public static implicit operator string(HL7Reference hl7Reference) {
+            return hl7Reference.reference.ToString();
+        }
+
+        public object Clone()
+        {
+            HL7Reference result = new HL7Reference();
+            result.Segment = Segment+"";
+            result.SegmentIndex = SegmentIndex + 0;
+            result.Field = Field + 0;
+            result.FieldRepetition = FieldRepetition + 0;
+            result.Component = Component + 0;
+            result.SubComponent = SubComponent + 0;
+            return result;
+        }
     }
 }

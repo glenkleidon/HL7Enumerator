@@ -1,10 +1,16 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace HL7Enumerator
 {
+    public enum HL7ElementType { None = 0, Batch, Message, Segment, Field, FieldRepetition, Component, SubComponent, Escape }
+
+    /// <summary>
+    /// Holds known constants for the HL7Enumerator Class
+    /// </summary>
     public static class Constants {
         public const string MSHSeparators = "|^~\\&";
         public const string Separators =  "\r|~^&\\"; // note: the ~ is deliberatly out of order...
@@ -12,7 +18,7 @@ namespace HL7Enumerator
         public static string ToMSHSeparators(string separators = Separators) {
             // reorder separators to MSH order
             if (string.IsNullOrEmpty(separators) || separators.Equals(Separators)) return MSHSeparators;
-            string sep=separators;
+            string sep=separators+new string(' ', separators.Length-6);
             if (separators[0].Equals('\r')) sep = separators.Substring(1);
             return (new char[]  {sep[0], sep[2], sep[1],sep[4], sep[3]}).ToString();
         }
@@ -22,12 +28,16 @@ namespace HL7Enumerator
         private char _separator;
         private string _separators;
         private HL7Element _parentElement;
-        private bool fieldRepetition = false;
+        private HL7Reference _reference;
+        private HL7ElementType _elementType;
+        private string value;
+
         public char Separator { get { return _separator; } }
         public HL7Element Parent { get { return _parentElement; } }
-
-        private string value;
+        public HL7Reference Reference { get { return _reference; } }
+        public HL7ElementType ElementType {get {return _elementType;} }
         public string Value { get { return value; } }
+
 
         private bool LastSeparator(int index, string data, string separators)
         {
@@ -37,6 +47,24 @@ namespace HL7Enumerator
 
             return (searchChars.Length <= 1) || (data.IndexOfAny(searchChars) < 0);
 
+        }
+
+        private HL7ElementType ElementTypeFromSeparator(char separator)
+        {
+            return ElementTypeFromSeparator(_separators.IndexOf(separator));
+        }
+        /// <summary>
+        /// Return the Element type using the Index of the Character that generated the need to create a new element.<br>
+        /// NOTE: do not confuse this method with a generic method to cast a HL7Element type from and integer:
+        /// This method does not support the BATCH type because the Message Separator is not defined, and the other
+        /// index is offset by three to indicate that the "0" is actually for SEGMENT. SO -1 is NONE, 0 is Segment etc.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        private HL7ElementType ElementTypeFromSeparator(int index)
+        {
+            if (index < 0 || index > _separators.Length) return HL7ElementType.None;
+             return (HL7ElementType)(index + 3);
         }
 
         /// <summary>
@@ -60,15 +88,264 @@ namespace HL7Enumerator
             return text.Replace((char)1, separator);
         }
 
-        public HL7Element() { }
+        public HL7Element() {
+            this._reference = new HL7Reference();
+            this._elementType = HL7ElementType.None;
+        }
+
+        public void AddElement(HL7ElementType elementType, string value, HL7Element data, HL7Element lastElement)  {
+            this._elementType = elementType;
+            this.value = value;
+            if (data != null)
+            {
+                data._parentElement = this;
+                this.Add(data);
+            }
+            switch (elementType) {
+                case HL7ElementType.Field:
+                    AddFieldInternal();
+                    break;
+                case HL7ElementType.Component:
+                    AddComponentInternal();
+                    break;
+                case HL7ElementType.SubComponent:
+                    AddSubComponentInternal();
+                    break;
+                case HL7ElementType.None:
+                    break;
+                case HL7ElementType.Batch:
+                    break;
+                case HL7ElementType.Message:
+                    break;
+                case HL7ElementType.Segment:
+                    AddSegmentInternal();
+                    break;
+                case HL7ElementType.FieldRepetition:
+                    AddFieldRepetitionInternal();
+                    break;
+                case HL7ElementType.Escape:
+                    throw new ArgumentException("Cannot create an element of Escape Type");
+                default:
+                    throw new ArgumentException("Unexpected ElementType");
+            }
+        }
+
+        private void AddSegmentInternal()
+        {
+            var parentElementType = HL7ElementType.None;
+            if (this._parentElement != null) parentElementType = _parentElement.ElementType;
+            switch (parentElementType)
+            {
+                case HL7ElementType.Field:
+                    //Parent is actually sibling 
+                    _parentElement = _parentElement._parentElement;
+                    _parentElement.Add(this);
+                    break;
+                case HL7ElementType.FieldRepetition:
+                case HL7ElementType.Segment:
+                    _parentElement.Add(this);
+                    break;
+                case HL7ElementType.None:
+                    //Add a new Message 
+                    if (value == null) throw new ArgumentNullException("Segment has no name");
+                    if (value.Length != 3) throw new ArgumentException(string.Format("Invalid Segment name '{0}'", value));
+                    _reference.Segment = value;
+                    var newParent = new HL7Element();
+                    newParent.AddElement(HL7ElementType.Message, null, this, null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("Unexpected elementType {0}", _elementType.ToString()));
+            }
+            if (Parent != null)
+            {
+                _reference = (HL7Reference)Parent.Reference.Clone();
+                _reference.Field = Parent.Count;
+            }
+        }
+
+        private void AddFieldInternal()
+        {
+            var parentElementType = HL7ElementType.None;
+            if (this._parentElement != null) parentElementType = _parentElement.ElementType;
+            switch (parentElementType)
+            {
+                case HL7ElementType.Field:
+                    //Parent is actually sibling 
+                    _parentElement = _parentElement._parentElement;
+                    _parentElement.Add(this);
+                    break;
+                case HL7ElementType.FieldRepetition:
+                case HL7ElementType.Segment:
+                    _parentElement.Add(this);
+                    break;
+                case HL7ElementType.None:
+                    //Add a new segment.
+                    var newParent = new HL7Element();
+                    newParent.AddElement(HL7ElementType.Segment, value, this, null);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("Unexpected elementType {0}", _elementType.ToString()));
+            }
+            if (Parent != null)
+            {
+                _reference = (HL7Reference)Parent.Reference.Clone();
+                this._reference.Field = Parent.Count;
+            }
+        }
+
+        private void AddFieldRepetitionInternal()
+        {
+            var lastElementType = HL7ElementType.None;
+            if (this._parentElement != null) lastElementType = _parentElement.ElementType;
+            switch (lastElementType)
+            {
+                case HL7ElementType.Field:
+                    //I was in a field and I hit a ~ so, parent is now going to be a child of me 
+                    if (Parent._parentElement._elementType == HL7ElementType.FieldRepetition)
+                    {
+                        //Already a parent repition, so just add to that one.
+                        Parent.Parent.Add(this);
+                    }
+                    else if (Parent._parentElement._elementType == HL7ElementType.Field)
+                    {
+                        var newParent = new HL7Element();
+                        newParent.AddElement(HL7ElementType.FieldRepetition, null, this, this.Parent);
+                    }
+                    else throw new ArgumentException("Unexpected Field repetition character");
+                    break;
+                case HL7ElementType.FieldRepetition:
+                    this._parentElement.Add(this);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("Unexpected elementType {0}", _elementType.ToString()));
+            }
+            if (Parent != null)
+            {
+                _reference = (HL7Reference)Parent.Reference.Clone();
+                _reference.FieldRepetition = _parentElement.Count;
+            }
+        }
+
+        private void AddComponentInternal()
+        {
+            var lastElementType = HL7ElementType.None;
+            if (Parent != null) lastElementType = Parent.ElementType;
+            switch (lastElementType)
+            {
+                case HL7ElementType.FieldRepetition:
+                    //I was in a field repetition, so I need a new field
+                    var newParent = new HL7Element();
+                    newParent.AddElement(HL7ElementType.Field, null, this, this.Parent);
+                    break;
+                case HL7ElementType.Field:
+                    //I was in a field and I hit a ^ so just Add me
+                    Parent.Add(this);
+                    break;
+                case HL7ElementType.Component:
+                    //I was in a component and I hit a ^ so parent is actually sibling, so add siblings parent
+                    _parentElement = _parentElement._parentElement;
+                    Parent.Add(this);
+                    break;
+                case HL7ElementType.SubComponent:
+                    //I was in subcomponent and I hit a ^, so I need to add on to the subcomponents parent;
+                    if (Parent.Parent.Parent != null && Parent.Parent.Parent.ElementType==HL7ElementType.Field) {
+                        this._parentElement = _parentElement._parentElement._parentElement;
+                        Parent.Add(this);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("Unexpected elementType {0}", _elementType.ToString()));
+            }
+            if (Parent != null)
+            {
+                _reference = (HL7Reference)Parent.Reference.Clone();
+                _reference.Component = _parentElement.Count;
+            }
+        }
+
+        private void AddSubComponentInternal()
+        {
+            var lastElementType = HL7ElementType.None;
+            if (Parent != null) lastElementType = Parent.ElementType;
+            switch (lastElementType)
+            {
+                case HL7ElementType.Component:
+                    //I was in a component and I hit a & so just add me
+                    Parent.Add(this);
+                    break;
+                case HL7ElementType.SubComponent:
+                    //I was in subcomponent and I hit a &, so parent is actually sibling;
+                    if (Parent.Parent != null && Parent.Parent.ElementType == HL7ElementType.Component)
+                    {
+                        this._parentElement = _parentElement._parentElement;
+                        Parent.Add(this);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(string.Format("Unexpected elementType {0}", _elementType.ToString()));
+            }
+            if (Parent != null)
+            {
+                _reference = (HL7Reference)Parent.Reference.Clone();
+                _reference.SubComponent = Parent.Count;
+            }
+        }
+
+
+        public HL7Element(Stream data, char separator, string separators = Constants.Separators, HL7Element owner = null) : this()
+        {
+            _separator = separator;
+            _separators = separators;
+            _parentElement = owner;
+            var builder = new StringBuilder();
+            var b = data.ReadByte();
+            HL7Element currentElement=null;
+            while (b>-1) {
+                char c = Convert.ToChar(b);
+                var index = separators.IndexOf(c);
+                if (index >= 0)
+                {
+                    var et = ElementTypeFromSeparator(index);
+                    if (et == HL7ElementType.Escape &&
+                        // check for MSH/BHS/FHS 1...
+                        (currentElement != null &&
+                            (Constants.HeaderTypes.Any(h => h.Equals(currentElement.Reference.Segment))) &&
+                            currentElement.Reference.Field == 1
+                         )
+                        )
+                    {
+                        builder.Append(c);
+                    }
+                    else
+                    {
+                        AddElement(et, builder.ToString(), null, this);
+                        builder.Clear();
+                    }
+                }
+                else {
+                    builder.Append(c);
+                }
+                b = data.ReadByte();
+            }
+        }
 
         public HL7Element(string data, char separator, string separators = Constants.Separators, HL7Element owner = null)
         {
             _separator = separator;
             _separators = separators;
             _parentElement = owner;
+
+            if (owner == null || separator=='\r') {
+                _reference = new HL7Reference();
+            }
+            else
+            {
+                _reference = (HL7Reference) owner.Reference.Clone();
+            }
+
             var index = separators.IndexOf(separator);
-            fieldRepetition = (index==2);
+            _elementType = ElementTypeFromSeparator(index);
+
 
             if (LastSeparator(index, data, separators))
             {
@@ -76,6 +353,7 @@ namespace HL7Enumerator
                 return;
             }
             var nextChar = separators[index + 1];
+
             data = ApplyEscape(data, separator, separators);
             var subElements = data.Split(separator);
 
@@ -161,7 +439,7 @@ namespace HL7Enumerator
                 {
                     var position = (criteria.Position < 1) ? 0 : criteria.Position;
                     result = (position <= result.Count) ? result[position-fieldOffset] : (position==1) ? result : null;
-                    if (result!=null && result.fieldRepetition) {
+                    if (result!=null && result.ElementType==HL7ElementType.FieldRepetition) {
                         var repetition = (criteria.Repetition < 1) ? 0 : criteria.Repetition - 1;
                         result = (repetition < result.Count) ? result[repetition] :
                                 (result.Count == 0) ? result : null;
@@ -260,11 +538,15 @@ namespace HL7Enumerator
         }
 
         /// <summary>
-        /// Implicit Casting to and from Text and HL7Message format.  These are as efficient as using the 
-        /// new operator Or the ToString() methods.
+        /// Implicit Casting to String from HL7Message format. This is as efficient as calling the constructor directly
         /// </summary>
         /// <param name="msgText"></param>
         public static implicit operator HL7Message(string msgText) { return new HL7Message(msgText); }
+
+        /// <summary>
+        /// Implicit Casting from HL7Message to string.  This is slightly safer than calling ToString() directly
+        /// </summary>
+        /// <param name="msgText"></param>
         public static implicit operator string(HL7Message msg)
         {
               return (

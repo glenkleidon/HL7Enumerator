@@ -123,6 +123,39 @@ namespace TestHL7Enumerator
             Assert.AreEqual(@"Section1\\3\&4", "" + msg.Element("MSH.4"));
         }
 
+        [TestMethod]
+        public void TestSearchCriteria_HL7ElementType_matches_expected_type()
+        {
+            HL7Enumerator.HL7Message msg = Example2;
+            Assert.AreEqual(Example2, "" + msg);
+
+            var field = msg.Element("OBR[1].16").ElementType;
+            Assert.AreEqual(HL7Enumerator.HL7ElementType.FieldRepetition, field);
+
+
+            field = msg.Element("OBR[1].16[2]").ElementType;
+            Assert.AreEqual(HL7Enumerator.HL7ElementType.Field, field);
+
+
+            string PIDfield = msg.Element("PID.11[2].3");
+            Assert.AreEqual(HL7Enumerator.HL7ElementType.Component, field);
+
+            string MSHfield = msg.Element("MSH/4/1/2");
+            Assert.AreEqual(HL7Enumerator.HL7ElementType.SubComponent, field);
+
+            string EmptyMSHfield = msg.Element("MSH/18[3]");
+            Assert.AreEqual(HL7Enumerator.HL7ElementType.None, field);
+
+        }
+
+        [TestMethod]
+        public void TestSearchCriteria_HL7Reference_matches_requested_field()
+        {
+            HL7Enumerator.HL7Message msg = Example3;
+            HL7Enumerator.HL7Element msh4 = msg.Element("MSH.4");
+            Assert.AreEqual("MSH.4", msh4.Reference );
+        }
+
 
 
     }

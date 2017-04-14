@@ -32,14 +32,14 @@ namespace Example1
             //Compose a Segment - create extension methods to this more cleanly
             // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
 
-            HL7Element pd1 = new HL7Element(null, '|');
+            HL7Element pd1 = new HL7Element("", '|');
             pd1.Add(new HL7Element("PD1", '~'));
             pd1.Add(new HL7Element("", '~'));
             pd1.Add(new HL7Element("", '~'));
             pd1.Add(new HL7Element("", '~'));
-            HL7Element patientField = new HL7Element(null, '~');
+            HL7Element patientField = new HL7Element("", '~');
             pd1.Add(patientField);
-            HL7Element patient = new HL7Element(null, '^');
+            HL7Element patient = new HL7Element("", '^');
             patientField.Add(patient);
             patient.Add(new HL7Element("1234567890", '&' ));
             patient.Add(new HL7Element("LAST", '&'));
