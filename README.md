@@ -148,7 +148,7 @@ The *Segments* property is a **HL7MessageElement** which contains all the segmen
 
 For convenience the method **HL7Message.AllSegments**  returns a *reduced* generic List of segments of a 
 particular type which if often a sensible starting point.  *[Note: this is not strictly required
-within the class and probably should be re-implemented an extension method]*
+within the class and probably should be re-implemented as an extension method]*
 
 Using the implicit string cast of **SearchCriteria** makes LINQ expressions relatively clean. 
 For example, the following expression returns all (obx) Test names in the message.
