@@ -7,7 +7,7 @@ overly complex for the requirements.
 
 We wanted to be able to perform actions such as
 ```
-    HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\n" +
+    HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
         ...
 
     string sendingSystem = mesg.Element("MSH.3");
