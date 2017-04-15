@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HL7Element.cs" />
     <Compile Include="SearchCriteria.cs" />
     <Compile Include="SearchCriteriaElement.cs" />
     <Compile Include="HL7Enumerator.cs" />

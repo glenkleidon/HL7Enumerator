@@ -87,12 +87,13 @@ namespace HL7Enumerator
         {
             get { return reference.Segment; }
             set {
-                if (value != null || value.Length < 3) 
-                {
-                    reference.Segment = "";
-                } else 
+                if (value != null && value.Length == 3) 
                 {
                     reference.Segment = value.Substring(0, 3).ToUpper();
+                }
+                else 
+                {
+                    reference.Segment = "";
                 }
             }
         }
