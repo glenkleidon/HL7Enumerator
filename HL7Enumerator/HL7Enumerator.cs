@@ -91,8 +91,8 @@ namespace HL7Enumerator
             if (this.Count() == 0) return value;
             StringBuilder result = new StringBuilder();
             foreach (HL7Element HL7Element in this) {
-                result.Append(HL7Element.ToString());
-                result.Append(Separator);
+                result.Append(HL7Element.ToString())
+                      .Append(Separator);
             }
             // remove trailing remnants...
             var final = result.ToString().Substring(0, result.Length - 1);
@@ -205,8 +205,8 @@ namespace HL7Enumerator
                     }
                     // OK, this is a whole OBX escape the for this segment
                     if (q < 0) q = text.Length;
-                    builder.Append(text.Substring(processedToPosition, p-processedToPosition));
-                    builder.Append(text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\"));
+                    builder.Append(text.Substring(processedToPosition, p-processedToPosition))
+                           .Append(text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\"));
                     processedToPosition = q;
                     rowsToProcess = false;
                     break;

@@ -58,6 +58,7 @@
     <Compile Include="TestSearchCriteria.cs" />
     <Compile Include="TestHL7EnumeratorElements.cs" />
     <Compile Include="TestHL7EnumeratorElementLinq.cs" />
+    <Compile Include="estHL7EnumeratorEscape.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HL7Enumerator\HL7Enumerator.csproj">
