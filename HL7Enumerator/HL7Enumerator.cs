@@ -178,6 +178,47 @@ namespace HL7Enumerator
         private HL7Element _segments;
         public HL7Element Segments { get { return (_segments == null) ? null : _segments; } }
 
+        /// <summary>
+        /// For a common issue where OBX containing Base64 sometimes contains rogue CRLF
+        /// This is common enough to be included in the routine processing.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <returns></returns>
+        public static string EscapeOBXCRLF(string text)
+        {
+            var builder = new StringBuilder();
+            var p = text.IndexOf("OBX|");
+            var processedToPosition = 0;
+            while (p >= 0)
+            {
+                var q = p+1;
+                var rowsToProcess = false;
+                while (q >= 0)
+                {
+                    q = text.IndexOf('\r', q+1);
+                    var isPipe = (q <0 || q>text.Length-4 || text.Substring(q + 4, 1) == "|");
+                    if (isPipe && !rowsToProcess) break;
+                    if (!isPipe) 
+                    {
+                       rowsToProcess = true;
+                       continue;
+                    }
+                    // OK, this is a whole OBX escape the for this segment
+                    if (q < 0) q = text.Length;
+                    builder.Append(text.Substring(processedToPosition, p-processedToPosition));
+                    builder.Append(text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\"));
+                    processedToPosition = q;
+                    rowsToProcess = false;
+                    break;
+                }
+                if (q < 0) break;
+                p = text.IndexOf("OBX|", q); // repeat for next one.
+            }
+            if (processedToPosition != 0 && processedToPosition < text.Length)
+                builder.Append(text.Substring(processedToPosition, text.Length - processedToPosition)); 
+            return (builder.Length == 0) ? text : builder.ToString();
+        }
+
 
         /// <summary>
         /// Extracts and validates the separator chars from a HL7 message.
@@ -261,10 +302,13 @@ namespace HL7Enumerator
 
         /// <summary>
         /// Implicit Casting to and from Text and HL7Message format.  These are as efficient as using the 
-        /// new operator Or the ToString() methods.
+        /// new operator Or the ToString() methods EXCEPT that the EscapeOBXCRLF is also called by default
         /// </summary>
         /// <param name="msgText"></param>
-        public static implicit operator HL7Message(string msgText) { return new HL7Message(msgText); }
+        public static implicit operator HL7Message(string msgText)
+        {
+            return new HL7Message(EscapeOBXCRLF(msgText));
+        }
         public static implicit operator string(HL7Message msg)
         {
               return (

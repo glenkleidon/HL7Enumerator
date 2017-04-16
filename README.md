@@ -34,9 +34,10 @@ I agreed that the task should not be that hard to do.  And so the ball started r
 The library is deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
 is supported through LINQ.
 
-The library contains 2 operational classes:   
+The library contains 3 operational classes:   
    + *class* **HL7Message** - Top Level element representing a single message
    + *class* **HL7Element** - Any message or part of a message (and the base class of *HL7Message*)
+   + *static class* **EscapeOBXCRLF** - Checks for the presence of unescaped CR and LF in the OBX body and escapes it.
 
 2 helper classes relating to Search Criteria: 
    + *class* **SearchCriteria** - A set of criteria representing the full path to a **HL7Element**
@@ -138,6 +139,21 @@ is exactly equivalent to the very long winded version:
 ```
 
 You can choose to return Elements from a *HL7Message* instance as *string* or *HL7Element* classes and use them interchangably.
+
+## Managing Base64 and RTF common failure to Escape CRLF.
+
+It has been observed that many systems implementing HL7 encoding forget to escape the CRLF in the contents of Base64 encoded
+data in the OBX record.  The reason being that most Base64 libraries assume mime encoding where the 
+recommended limit is 78 chars per line.
+
+The static function *EscapeOBXCRLF* is called automatically in the implicit string cast to HL7Message. However, calling
+the constructor directly does not evoke the function.  Because this is a static function, it can be called on any message text 
+prior to evoking the constructor or as required.
+
+The method will also work for RTF documents (or any other type for that matter) where CRs or CRLF's have not been 
+escaped in the OBX segments.  
+
+*NOTE: The method does not affect segments other than OBX and the CRLFs will be escaped to \\X0D\\\\X0A\\.*
 
 ## LINQ Queries
 
