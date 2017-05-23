@@ -8,7 +8,16 @@ namespace HL7Enumerator
     public static class Constants {
         public const string MSHSeparators = "|^~\\&";
         public const string Separators =  "\r|~^&\\"; // note: the ~ is deliberatly out of order...
+        
         public static readonly string[] HeaderTypes = { "FHS", "BHS", "MSH" };
+        public static string ToSeparators(string mshSeparators) {
+            // reorder MSH Separators to Sepator Order
+            char[] separators= new char[6];
+            int[] translateOrder = { 1, 3, 2, 5, 4 };
+            separators[0] = '\r';
+            for (int i=1; i<6; i++) separators[i] = Separators[translateOrder[i]];
+            return separators.ToString();
+        }
         public static string ToMSHSeparators(string separators = Separators) {
             // reorder separators to MSH order
             if (string.IsNullOrEmpty(separators) || separators.Equals(Separators)) return MSHSeparators;
@@ -28,6 +37,31 @@ namespace HL7Enumerator
 
         private string value;
         public string Value { get { return value; } }
+
+        public static HL7Element ParseOnly(string message, SearchCriteria criteria)
+        {
+            HL7Element result = null;
+            var segmentTerminator = HL7Enumerator.Constants.Separators[0];
+            if (criteria.Segment.Length > 0)
+            {
+                int q = -1;
+                var p = message.IndexOf(segmentTerminator + criteria.Segment);
+                p = (p == 0 && message.Substring(0, 3) == criteria.Segment) ?   0 :  -1; 
+                if (p >= 0)
+                {
+                    q = message.IndexOf(segmentTerminator, p);
+                    if (q >= 0)
+                    {
+                        var msgSegment = message.Substring(p, (q - p));
+                        var separators = HL7Enumerator.Constants.ToMSHSeparators
+                        result = new HL7Element()
+                    }
+                }
+
+
+            }
+
+        } 
 
         private bool LastSeparator(int index, string data, string separators)
         {
