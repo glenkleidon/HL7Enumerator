@@ -59,6 +59,7 @@
     <Compile Include="TestHL7EnumeratorElements.cs" />
     <Compile Include="TestHL7EnumeratorElementLinq.cs" />
     <Compile Include="TestHL7EnumeratorParseOnly.cs" />
+    <Compile Include="TestDelimitedString.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HL7Enumerator\HL7Enumerator.csproj">

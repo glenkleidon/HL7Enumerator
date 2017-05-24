@@ -38,31 +38,6 @@ namespace HL7Enumerator
         private string value;
         public string Value { get { return value; } }
 
-        public static HL7Element ParseOnly(string message, SearchCriteria criteria)
-        {
-            HL7Element result = null;
-            var segmentTerminator = HL7Enumerator.Constants.Separators[0];
-            if (criteria.Segment.Length > 0)
-            {
-                int q = -1;
-                var p = message.IndexOf(segmentTerminator + criteria.Segment);
-                p = (p == 0 && message.Substring(0, 3) == criteria.Segment) ?   0 :  -1; 
-                if (p >= 0)
-                {
-                    q = message.IndexOf(segmentTerminator, p);
-                    if (q >= 0)
-                    {
-                        var msgSegment = message.Substring(p, (q - p));
-                        var separators = HL7Enumerator.Constants.ToMSHSeparators
-                        result = new HL7Element()
-                    }
-                }
-
-
-            }
-
-        } 
-
         private bool LastSeparator(int index, string data, string separators)
         {
             if (string.IsNullOrEmpty(data)) return true;
@@ -261,7 +236,7 @@ namespace HL7Enumerator
         /// </summary>
         /// <param name="header"></param>
         /// <returns></returns>
-        private string ValidatedSeparators(string header) {
+        private static string ValidatedSeparators(string header) {
             var segmentType = header.Substring(0, 3);
             string result = Constants.Separators;
             if (Constants.HeaderTypes.Any(h => h.Equals(segmentType)))
@@ -292,6 +267,39 @@ namespace HL7Enumerator
 
             _segments = new HL7Element(mesg, '\r', ValidatedSeparators(mesgHeader), null);
         }
+
+        public static HL7Element ParseOnly(string mesg, SearchCriteria criteria)
+        {
+            HL7Element result = null;
+            if (mesg.Length < 8) throw new ArgumentException("Not a complete HL7 message");
+            var mesgHeader = mesg.Substring(0, 8);
+            if (mesgHeader.Length < 8) throw new ArgumentException("Not a valid HL7 message");
+
+            var separators = ValidatedSeparators(mesgHeader);
+
+            var segmentTerminator = Constants.Separators[0];
+            if (criteria.Segment.Length > 0)
+            {
+                int q = -1;
+                var p = mesg.IndexOf(segmentTerminator + criteria.Segment);
+                p = (p < 0 && mesg.Substring(0, 3).Equals(criteria.Segment)) ? 0 : -1;
+                if (p >= 0)
+                {
+                    q = mesg.IndexOf(segmentTerminator, p+1);
+                    if (q >= 0)
+                    {
+                        var msgSegment = mesg.Substring(p, (q - p));
+                        if (criteria.Field.Enabled)
+                        result = new HL7Element(msgSegment, separators[1], separators);
+                    }
+                }
+            }
+            return result;
+        }
+
+
+
+
         /// <summary>
         /// Returns all segments matching the segment type as an array of 
         /// </summary>

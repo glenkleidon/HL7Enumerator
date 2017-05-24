@@ -19,8 +19,8 @@ namespace TestHL7Enumerator
         [TestMethod]
         public void TestHL7Enumerator_ParseOnly_Null_String_Returns_Empty_string()
         {
-            HL7Enumerator.HL7Element segment = HL7Enumerator.HL7Element.ParseOnly(Example1,"MSH.9");
-            Assert.AreEqual(MSH, segment);
+            HL7Enumerator.HL7Element segment = HL7Enumerator.HL7Message.ParseOnly(Example1,"MSH.9");
+            Assert.AreEqual("ORU^R01", segment);
 
         }
     }
