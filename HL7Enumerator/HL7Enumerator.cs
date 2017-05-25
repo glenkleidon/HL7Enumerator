@@ -8,7 +8,7 @@ namespace HL7Enumerator
     public static class Constants {
         public const string MSHSeparators = "|^~\\&";
         public const string Separators =  "\r|~^&\\"; // note: the ~ is deliberatly out of order...
-        
+        public enum HL7Separators { segment, field, repeat, component, subcomponent, escape };
         public static readonly string[] HeaderTypes = { "FHS", "BHS", "MSH" };
         public static string ToSeparators(string mshSeparators) {
             // reorder MSH Separators to Sepator Order
@@ -270,7 +270,6 @@ namespace HL7Enumerator
 
         public static HL7Element ParseOnly(string mesg, SearchCriteria criteria)
         {
-            HL7Element result = null;
             if (mesg.Length < 8) throw new ArgumentException("Not a complete HL7 message");
             var mesgHeader = mesg.Substring(0, 8);
             if (mesgHeader.Length < 8) throw new ArgumentException("Not a valid HL7 message");
@@ -280,21 +279,36 @@ namespace HL7Enumerator
             var segmentTerminator = Constants.Separators[0];
             if (criteria.Segment.Length > 0)
             {
-                int q = -1;
-                var p = mesg.IndexOf(segmentTerminator + criteria.Segment);
-                p = (p < 0 && mesg.Substring(0, 3).Equals(criteria.Segment)) ? 0 : -1;
-                if (p >= 0)
-                {
-                    q = mesg.IndexOf(segmentTerminator, p+1);
-                    if (q >= 0)
-                    {
-                        var msgSegment = mesg.Substring(p, (q - p));
-                        if (criteria.Field.Enabled)
-                        result = new HL7Element(msgSegment, separators[1], separators);
-                    }
+                var SegmentRepitition = (criteria.elements[0].Repetition < 2) ? 1 : criteria.elements[0].Repetition;
+                var segment = DelimitedString.BoundedBy(mesg, criteria.Segment, segmentTerminator+"", SegmentRepitition);
+                if (!criteria.Field.Enabled) return segment; // (implictly cast as element)
+                var headerOffset = (Constants.HeaderTypes.Any(h => h.Equals(criteria.Segment))) ? 0 : 1;
+                var separator = separators[(int)Constants.HL7Separators.field];
+                var field = DelimitedString.Field(segment, ""+separator, criteria.Field.Position+headerOffset);
+                if (field.Length == 0) return new HL7Element("",separator,separators);
+                if (criteria.Field.Repetition > 1) {
+                    field = DelimitedString.Field(
+                          field, 
+                          "" + separators[(int)Constants.HL7Separators.repeat],
+                          criteria.Field.Repetition
+                          );
                 }
+                if (!criteria.Component.Enabled) return new HL7Element(field, separator, separators);
+                separator = Constants.Separators[(int)Constants.HL7Separators.component];
+                var component = DelimitedString.Field(field,
+                     "" + separator,
+                     criteria.Component.Position);
+                var subcomponentseparator = separators[(int)Constants.HL7Separators.subcomponent];
+                return (component.Length==0 || !criteria.Subcomponent.Enabled) ? 
+                    new HL7Element(component, separator, separators) 
+                    :
+                    new HL7Element(
+                     DelimitedString.Field(field,
+                      "" + subcomponentseparator,
+                      criteria.Subcomponent.Position), subcomponentseparator, separators);
+                    
             }
-            return result;
+            return null;
         }
 
 

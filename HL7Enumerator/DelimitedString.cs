@@ -21,19 +21,39 @@ namespace HL7Enumerator
         public static string Field(string text, string delimiter, int fieldPosition, string alternateEnd = "")
         {
             if (string.IsNullOrEmpty(delimiter) || string.IsNullOrEmpty(text)) return string.Empty;
-            var dLength = delimiter.Length;
-            int p = text.IndexOf(delimiter);
-            if  (p < 0) return (fieldPosition==1) ? text : string.Empty;
-
-            int startPoint = 0; 
+            var delimiterLength = delimiter.Length;
+            
+            var p = text.IndexOf(delimiter);
+            if (fieldPosition == 1)
+            {
+                if (p == 0) return string.Empty;
+                if (p < 0) return text;
+                return text.Substring(0, p);
+            }
+            else
+            {
+                if (p < 0) return string.Empty;
+            }
+            // At this point there is at least 1 delimiter and the field position is >1 
+            int sp = 0;
             int c = 1;
             while (c++ < fieldPosition && p>=0)
             {
-                startPoint = p + dLength;
-                p = text.IndexOf(delimiter, startPoint);
+                sp = p+delimiterLength;
+                p = text.IndexOf(delimiter, sp);
             }
-            p = (p >= 0) ? p - 1 : text.Length; 
-            return text.Substring(startPoint, p-startPoint);
+            if (p < 0)
+            {
+                if (c <= fieldPosition)
+                {
+                    return string.Empty;
+                }
+                else
+                {
+                    p = text.Length;
+                }
+            }
+            return text.Substring(sp, p-sp);
         }
         /// <summary>
         /// Return the text bounded by to start and end text 
@@ -45,16 +65,27 @@ namespace HL7Enumerator
         /// <param name="endWith"></param>
         /// <param name="copyToEndIfStartFound"></param>
         /// <returns></returns>
-        public static string BoundedBy(string text, string startWith, string endWith, bool copyToEndIfStartFound=false)
+        public static string BoundedBy(string text, string startWith, string endWith, int occurrence=1, bool copyToEndIfStartFound=false)
         {
             if (string.IsNullOrEmpty(startWith) || string.IsNullOrEmpty(endWith) || string.IsNullOrEmpty(text)) return string.Empty;
-            var p = text.IndexOf(startWith);
+            var c = 0;
+            var p = 0;
+            var sp = 0;
+            var startWithLength = startWith.Length;
+
+            while (c++ < occurrence & p>=0)
+            {
+                p = text.IndexOf(startWith, sp);
+                sp = p + startWithLength;
+            }
             if (p < 0) return string.Empty;
             int q = 0;
-            if (p >= 0) {
-                p = p + startWith.Length;
-                q = text.IndexOf(endWith, p);
+            if (p >= 0)
+            {
+                p = sp;
+                q = text.IndexOf(endWith, sp);
             }
+            
             if (copyToEndIfStartFound && q < 0) q = text.Length;
             return (q > p) ? text.Substring(p, q - p) : string.Empty;
         }
