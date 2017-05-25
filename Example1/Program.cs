@@ -11,13 +11,24 @@ namespace Example1
     {
         static void Main(string[] args)
         {
-            HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
+            var msgText = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
               @"PID|||001677980||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|" + "\r" +
               @"PD1||||1234567890^LAST^FIRST^M^^^^^NPI|" + "\r" +
               @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|" + "\r" +
               @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|" + "\r" +
               @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|" + "\r";
 
+            string messageType = HL7Message.ParseOnly(msgText, "MSH.9");
+            if (!messageType.Substring(0, 3).Equals("ORU", StringComparison.CurrentCultureIgnoreCase))
+            {
+                Console.WriteLine("Only processing ORU MessageType");
+            }
+            else 
+            {
+                Console.WriteLine("Processing ORU Message " + HL7Message.ParseOnly(msgText,"MSH.10"));
+            }
+
+            HL7Message mesg = msgText;
             string SendingSystem = mesg.Element("MSH.3");
             Console.WriteLine(string.Format("Message received from Sending system {0}", SendingSystem));
 
