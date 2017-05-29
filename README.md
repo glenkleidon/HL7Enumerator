@@ -64,10 +64,10 @@ by calling the overridden version of *Element* from the **HL7Message** class.
 
 The **HL7Message** class has one static Method *ParseOnly* which provides efficent access to single fields, and one public method *AllSegments* which returns a generic list of *HL7Element* containing all segments of a particular type (eg return all OBX records). The *ParseOnly* method is typically for ensuring a message can be handled (by checking the message type) or for logging purposes to extract the timestamp and the Message Number before simply storing the message. The *AllSegments* method is not strictly required as it simply encapsulates a LINQ query, although it is convenient.
 
-## Static Methdos
+## Static Methods
 
 ### HL7Message Static Methods
-   + _ **ParseOnly(message, Criteria)**_ - Provides an efficient method of extracting a field from a message without processing the entire message eg
+   + _**ParseOnly(message, Criteria)**_ - Provides an efficient method of extracting a field from a message without processing the entire message eg
    ```if (!HL7Message.ParseOnly(mesgText, "MSH.9").Equals("ORU^R01") throw new ArgumentException("Message type not supported");```
 
 ## Properties
