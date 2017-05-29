@@ -7,9 +7,12 @@ overly complex for the requirements.
 
 We wanted to be able to perform actions such as
 ```
-    HL7Message mesg = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
-        ...
-
+    string msgText = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
+    
+    if CanHandle(mesgText) throw new ArgumentException("Not a message we can handle");
+    
+    HL7Message mesg = msgText;
+    
     string sendingSystem = mesg.Element("MSH.3");
     Console.WriteLine(string.Format("Message received from Sending System {0}", sendingSystem));
 
@@ -54,15 +57,18 @@ ignore the Search Criteria classes for most operations - criteria is implicitly 
 The **HL7Element** class is a descendant of a generic list of *itself* (IE a _**List\<HL7Element\>**_) and therefore 
 inherits the *IEnumerable* interface.  This makes the class automatically support LINQ queries.  
 
-There is only 1 pubic method : *Element* which provides access to specific HL7 (sub) elements.  The method is typically called from 
-the HL7within a Linq query to access elements during enumeration.  
+There is 1 pubic method : *Element* which provides access to specific HL7 (sub) elements  The *Element* method is typically called from the HL7 within a Linq query to access elements during enumeration.  
 
 It is not usually necessary to call the *Element* method of **HL7Element** directly.  It is more common to use the method
 by calling the overridden version of *Element* from the **HL7Message** class.
 
-The **HL7Message** class has one additionaly method *AllSegments* which returns a generic list of *HL7Element* containing all segments 
-of a particular type. (eg return all OBX records)  This is not strictly required as it simply encapsulates a LINQ query, although it
-is convenient.
+The **HL7Message** class has one static Method *ParseOnly* which provides efficent access to single fields, and one public method *AllSegments* which returns a generic list of *HL7Element* containing all segments of a particular type (eg return all OBX records). The *ParseOnly* method is typically for ensuring a message can be handled (by checking the message type) or for logging purposes to extract the timestamp and the Message Number before simply storing the message. The *AllSegments* method is not strictly required as it simply encapsulates a LINQ query, although it is convenient.
+
+## Static Methdos
+
+### HL7Message Static Methods
+   + _ **ParseOnly(message, Criteria)**_ - Provides an efficient method of extracting a field from a message without processing the entire message eg
+   ```if (!HL7Message.ParseOnly(mesgText, "MSH.9").Equals("ORU^R01") throw new ArgumentException("Message type not supported");```
 
 ## Properties
 
