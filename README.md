@@ -9,7 +9,7 @@ We wanted to be able to perform actions such as
 ```
     string msgText = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
     
-    if CanHandle(mesgText) throw new ArgumentException("Not a message we can handle");
+    if !CanHandle(mesgText) throw new ArgumentException("Not a message we can handle");
     
     HL7Message mesg = msgText;
     
