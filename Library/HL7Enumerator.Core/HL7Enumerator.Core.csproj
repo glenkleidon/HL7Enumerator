@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Glen Kleidon</Authors>
+    <Company>Galkam PTY LTD</Company>
+    <PackageId>Galkam.HL7Enumerator</PackageId>
+    <Product>HL7Enumerator Standard Library</Product>
+    <Description>A Generic HL7 (pipe delimited) message DECODER supporting the IEnumerable Interface.  It allows for Linq queries to be used on HL7 Messages at any level.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/glenkleidon/HL7Enumerator</PackageProjectUrl>
+    <PackageIcon>HL7 Enum.png</PackageIcon>
+    <PackageIconUrl />
+    <RepositoryUrl>https://github.com/glenkleidon/HL7Enumerator</RepositoryUrl>
+    <RepositoryType>GIT</RepositoryType>
+    <PackageTags>HL7, HL7 Linq, HL7 parser, c#</PackageTags>
+    <PackageReleaseNotes>Conversion from the Framework Library</PackageReleaseNotes>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <NeutralLanguage>en</NeutralLanguage>
+    <AssemblyVersion>1.0.1.0</AssemblyVersion>
+    <FileVersion>1.0.1.0</FileVersion>
+    <Version>1.1.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\Resources\HL7 Enum.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>
