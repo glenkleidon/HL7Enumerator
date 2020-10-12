@@ -68,6 +68,7 @@ The **HL7Message** class has one static Method *ParseOnly* which provides effice
 
 ### HL7Message Static Methods
    + _**ParseOnly(message, Criteria)**_ - Provides an efficient method of extracting a field from a message without processing the entire message eg
+   
    ```if (!HL7Message.ParseOnly(mesgText, "MSH.9").Equals("ORU^R01") throw new ArgumentException("Message type not supported");```
 
 ## Properties
@@ -224,8 +225,12 @@ elements or by creating instances of HL7Elements and "Adding" them to the Inhere
     Console.WriteLine("Composed PD1: " + pd1);
 ```
 As you can see this will work, however the use of the Field delimiters seems a little obscure.  In the future an extension method could be used to 
-make the style a little cleaner.  eg ``` pd1.AddField(position, FieldContent); 
-FieldContent.AddComponent(position,"1234567890","Last","First"...);``` 
+make the style a little cleaner.  eg
+
+``` pd1.AddField(position, FieldContent); 
+FieldContent.AddComponent(position,"1234567890","Last","First"...);
+``` 
+
 might be sensible extensions.
 
 
