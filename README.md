@@ -110,16 +110,29 @@ not recommended.**
 
 The search criteria at the **HL7Message** level is of the following format
 
-```<Segment>.[['['<replicate>']']|*[.|/]<Field>['['<replicate>']'][.|/]<Component>[.|/]<SubComponent>]```
+```<Segment>[['['<replicate>']']|*[.|/]<Field>['['<replicate>']'][.|/]<Component>[.|/]<SubComponent>]```
 
 *All of Fields after Segment are optional*
 
 For example: 
 
-   `OBR[2]/16[3]/2/1` alternatively `OBR[2].16[3].2.1` or just `OBR[2].16[3].2` 
+   ```OBR[2]/16[3]/2/1` alternatively `OBR[2].16[3].2.1` or just `OBR[2].16[3].2``` 
 
 will return the *Surname* of the *3rd* \'Ordering Provider\' in the *2nd* OBR16 encountered in the message.
 
+### Requesting Replicates
+
+You may specify an EMPTY replicate for the FIELD property meaning that ALL replicates for the field will be returned. 
+
+Return All of the Patient Identifiers:  
+
+```PID.3[]```
+    
+Returns as an Array of HL7Element containing all of the identifier fields.
+
+In contrast `PID.3` is equivalent to `PID.3[1]` 
+
+_This feature was release in Nuget Package Version 1.1.1 _
 
 
 ## Implicit *string* Casting
