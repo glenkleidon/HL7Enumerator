@@ -331,29 +331,41 @@ namespace HL7Enumerator
         /// <param name="criteria"></param>
         /// <returns></returns>
         public HL7Element Element(SearchCriteria criteria) {
+
+            var nullSegment = new HL7Element("",'|');
             // Locate required Segment
             if (criteria==null || criteria.Segment == null) return null;
             var segmentElements = AllSegments(criteria.Segment);
             var targetRow = (criteria.SegmentRepetition > 0) ? criteria.SegmentRepetition - 1 : 0;
-            if (targetRow > segmentElements.Count - 1) return new HL7Element(); // not found;
+            if (targetRow > segmentElements.Count - 1) return nullSegment; // not found;
 
+
+            var result = segmentElements[targetRow];
+            //Field
+            // Does the position need a header Ajustment (Eg MSH,BHS, FSH)
             if (!criteria.Field.Enabled) return segmentElements[targetRow];  //wants only the full segment
+            var headerAdjustment = (Constants.HeaderTypes.Any(h => h.Equals(criteria.Segment))) ? 1 : 0;
+            result = result[criteria.Field.Position - headerAdjustment];
+            if (criteria.Field.Repetition==-1) return result;
+            if (criteria.Field.Repetition > result.Count) return nullSegment;
 
-            // locate the required field, components or subcomponent
-            var makeHeaderAdjustment = (Constants.HeaderTypes.Any(h => h.Equals(criteria.Segment)));
-            SearchCriteriaElement[] newCriteria = new SearchCriteriaElement[3];
-            for (int i = 1; i < 4; i++)
-            {
-                // Make Adjustment for MSH
-                newCriteria[i - 1] = (i==1 && criteria.elements[i].Enabled && makeHeaderAdjustment) ?
-                    new SearchCriteriaElement(criteria.elements[i].Position-1, 
-                                              criteria.elements[i].Repetition,
-                                              criteria.elements[i].Value,
-                                              true)
-                    :
-                    criteria.elements[i];
-            }
-            return segmentElements[targetRow].Element(newCriteria);
+            var rep = ((criteria.Field.Repetition < 2) ? 1 : criteria.Field.Repetition)-1;
+            if (rep < result.Count) result = result[rep]; 
+
+
+            //Component
+            if (!criteria.Component.Enabled  || criteria.Component.Repetition == -1 || 
+                 (result.Count==0 && criteria.Component.Position<2)) return result;
+            if (criteria.Component.Position > result.Count) return nullSegment;
+            result = result[criteria.Component.Position-1];
+
+            //SubComponent
+            if (!criteria.Subcomponent.Enabled || criteria.Subcomponent.Repetition == -1 || 
+                  (criteria.Subcomponent.Position<2 && result.Count==0) ) return result;
+            if (criteria.Subcomponent.Position >1 && criteria.Component.Position > result.Count) return nullSegment;
+            result = result[criteria.Subcomponent.Position-1];
+            
+            return result;
         }
 
         /// <summary>

@@ -113,6 +113,25 @@ namespace TestHL7Enumerator
 
             Assert.Equal(@"CRN 1st \& 2nd Test Street", "" + msg.Element("PID.11.1"));
         }
+        [Fact]
+        public void TestSearchCriteria_Array_of_PID_Elements()
+        {
+            HL7Enumerator.HL7Message msg = Example3;
+            var addresses = msg.Element("PID.11[]");
+            Assert.Equal(2, addresses.Count);
+            Assert.Equal("ACT", addresses[0][3].ToString());
+            Assert.Equal("WODEN", addresses[1][2].ToString());
+
+        }
+
+        [Fact(Skip ="For future releases.")]
+        public void TestSearchCriteria_array_of_MSH_12()
+        {
+            HL7Enumerator.HL7Message msg = Example2;
+            var stds = msg.Element("MSH.12.2[]");
+            Assert.Equal(3,stds.Count);
+            Assert.Equal(String.Empty, stds[2].ToString());
+        }
 
         [Fact]
         public void TestSearchCriteria_MSH_Element_with_Escape_returns_correct_field()

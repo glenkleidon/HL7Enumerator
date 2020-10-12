@@ -33,7 +33,15 @@ namespace TestHL7Enumerator
             Assert.Equal("MSH", searchElement.Value);
             Assert.Equal(1, searchElement.Repetition);
             Assert.Equal(0, searchElement.Position);
+        }
 
+        [Fact]
+        public void TestParseElement_segment_repetition_returns_Segment_and_All_Repititions()
+        {
+            var searchElement = HL7Enumerator.SearchCriteriaElement.ParseElement("MSH[]");
+            Assert.Equal("MSH", searchElement.Value);
+            Assert.Equal(-1, searchElement.Repetition);
+            Assert.Equal(0, searchElement.Position);
         }
 
         [Fact]
