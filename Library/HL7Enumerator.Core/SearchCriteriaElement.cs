@@ -54,13 +54,22 @@ namespace HL7Enumerator
                 var q = criteria.IndexOf(']', p);
                 if (q < 0) throw new ArgumentException(string.Format("Closing bracket not present in {0}", 0));
                 numberElement = numberElement.Substring(0, p);
-                if (!Int32.TryParse(criteria.Substring(p + 1, q - p - 1), out repetition))
-                    throw new ArgumentException(string.Format("Repetition number is not an integer at {0}", criteria));
+                var repititionNumber = criteria.Substring(p + 1, q - p - 1);
+                if (repititionNumber.Length == 0)
+                {
+                    repetition = -1;
+                }
+                else
+                {
+                    if (!Int32.TryParse(repititionNumber, out repetition))
+                        throw new ArgumentException(string.Format("Repetition number is not an integer at {0}", criteria));
+                }
             }
             if (numberElement.Equals("*")) 
             {
               skip = true;
-            } else if (numberElement.IndexOf("'") >= 0)
+            } 
+            else if (numberElement.IndexOf("'") >= 0)
             {
                 value = numberElement.Replace("'", "");
             } else if (!Int32.TryParse(numberElement, out position))
