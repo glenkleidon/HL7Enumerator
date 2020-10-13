@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static HL7Enumerator.Core.DataTypes;
 
 namespace HL7Enumerator.Extensions
 {
@@ -82,31 +83,5 @@ namespace HL7Enumerator.Extensions
                    );
         }
 
-        /*
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-					
-public class Program
-{
-	
-	public static void Main()
-	{
-		var text = "line 1 \r\nline 2\t and some moreksdhfkahsdfkj.\t" ;
-		var lc = new LocateChars();
-        var charpos = lc.GetText(text).ToList();
-		foreach (CharPos cp in charpos) {
-			Console.WriteLine(string.Format("{0} {1}",(int)cp.character,cp.index)); 
-		}
-		Console.WriteLine(s.ToString());
-	}
-	
-
-	
-	public class LocateChars {
-		
-  }	
-}            */
     }
 }
