@@ -82,31 +82,13 @@ namespace HL7Enumerator.Extensions
                    );
         }
 
-        /*
-using System;
-using System.Linq;
-using System.Collections.Generic;
-using System.Text;
-					
-public class Program
-{
-	
-	public static void Main()
-	{
-		var text = "line 1 \r\nline 2\t and some moreksdhfkahsdfkj.\t" ;
-		var lc = new LocateChars();
-        var charpos = lc.GetText(text).ToList();
-		foreach (CharPos cp in charpos) {
-			Console.WriteLine(string.Format("{0} {1}",(int)cp.character,cp.index)); 
-		}
-		Console.WriteLine(s.ToString());
-	}
-	
-
-	
-	public class LocateChars {
-		
-  }	
-}            */
+        public static string LineEnding(this string text)
+        {
+            var crIndex = text.IndexOf('\r');
+            var lfIndex = text.IndexOf('\n');
+            if (crIndex < 0) return "\n";
+            if (lfIndex < 0) return "\r";
+            return (lfIndex == crIndex + 1) ? "\r\n" : "\r";
+        }
     }
 }
