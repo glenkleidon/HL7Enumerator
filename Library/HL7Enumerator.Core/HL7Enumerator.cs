@@ -206,38 +206,37 @@ namespace HL7Enumerator
             var lineEndingSize = text.LineEnding().Length;
             var builder = new StringBuilder();
             var p = text.IndexOf("OBX|");
-            var processedToPosition = 0;
+            var messagePosition = 0;
             while (p >= 0)
             {
                 var q = p+1;
-                var rowsToProcess = false;
+                var hasRowsToEscape = false;
                 while (q >= 0)
                 {
                     q = text.IndexOf('\r', q+4);
                     var endOfObx = (q <0 || q>text.Length-4 || text.Substring(q + 3+lineEndingSize, 1) == "|");
                     if (endOfObx)
                     {
-                        if (!rowsToProcess) break;
+                        if (!hasRowsToEscape) break;
                     }
                     else 
                     {
-                       rowsToProcess = true;
+                       hasRowsToEscape = true;
                        continue;
                     }
-                    // OK, this is a whole OBX escape the for this segment
                     if (q < 0) q = text.Length;
-                    var preText = text.Substring(processedToPosition, p - processedToPosition);
+                    var preText = text.Substring(messagePosition, p - messagePosition);
                     var processText = text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\");
                     builder.Append(preText).Append(processText);
-                    processedToPosition = q;
-                    rowsToProcess = false;
+                    messagePosition = q;
+                    hasRowsToEscape = false;
                     break;
                 }
                 if (q < 0) break;
                 p = text.IndexOf("OBX|", q); // repeat for next one.
             }
-            if (processedToPosition != 0 && processedToPosition < text.Length)
-                builder.Append(text.Substring(processedToPosition, text.Length - processedToPosition)); 
+            if (messagePosition != 0 && messagePosition < text.Length)
+                builder.Append(text.Substring(messagePosition, text.Length - messagePosition)); 
             return (builder.Length == 0) ? text : builder.ToString();
         }
 
