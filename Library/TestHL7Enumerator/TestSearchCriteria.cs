@@ -39,5 +39,6 @@ namespace TestHL7Enumerator
             Assert.Equal(3, searchCriteria.Field.Position);
             Assert.Equal(2, searchCriteria.Component.Position);
         }
+
     }
 }
