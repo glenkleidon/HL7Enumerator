@@ -214,7 +214,6 @@ namespace HL7Enumerator.Types
         {
             public NM_Number()
             {
-                 
             }
             public NM_Number(HL7Element element)
             {
@@ -338,6 +337,7 @@ namespace HL7Enumerator.Types
                     $"{NameContext.ToString(ns)}{separator}{NameAssemblyOrder}";
             }
         }
+
         public class TN_TelephoneNumber
         {
             public string CountryCode { get; set; }
@@ -515,6 +515,16 @@ namespace HL7Enumerator.Types
             public string TelecommunicationUseCode { get; set; }
             public string TelecommunicationEquipment { get; set; }
             public string EmailAddress { get; set; }
+            public override string ToString()
+            {
+                return ToString('^');
+            }
+            public virtual string ToString(char separator)
+            {
+                return
+                    $"{(string)TelephoneNumber}{separator}{TelecommunicationUseCode}{separator}{TelecommunicationEquipment}" +
+                    $"{separator}{EmailAddress}";
+            }
         }
 
         public class XCN_ExtendedCompositeIDAndName:XPN_ExtendedPersonName
@@ -540,7 +550,22 @@ namespace HL7Enumerator.Types
                     $"{NameValidityRange.ToString(ns)}{separator}{NameAssemblyOrder}";
             }
         }
+        public class VID_VersionIdentifier
+        { 
+           public string VersionID { get; set; }
+           public CE_CodedElement Internationalization { get; set; }
+           public CE_CodedElement InternationalVersionID { get; set; }
+            public override string ToString()
+            {
+                return ToString('^');
+            }
+            public virtual string ToString(char separator)
+            {
+                return
+                    $"{VersionID}{separator}{Internationalization.ToString()}{separator}{InternationalVersionID.ToString()}";
+            }
 
+        }
         public class DR_DateRange
         {
             public DateTime? DateFrom { get; set; }
@@ -567,13 +592,72 @@ namespace HL7Enumerator.Types
             {
                 return ToString('^');
             }
-            public string ToString(char sepatator)
+            public virtual string ToString(char sepatator)
             {
                 return $"{Identifier}{sepatator}{Text}{sepatator}{NameOfCodingSystem}" +
                     $"{sepatator}{AlternateIdentifier}{sepatator}{AlternateText}" +
                     $"{sepatator}{NameOfAlternateCodingSystem}";
             }
         }
+
+
+        public class CNE_CodedWithNoExceptions : CE_CodedElement
+        {
+            public string CodingSystemVersionID { get; set; }
+            public string AlternateCodingSystemVersionID { get; set; }
+            public string OriginalText { get; set; }
+            public override string ToString(char separator)
+            {
+               return $"{base.ToString(separator)}{separator}{CodingSystemVersionID}{separator}" +
+                    $"{AlternateCodingSystemVersionID}{separator}{OriginalText}";
+            }
+        }
+        public class CWE_CodedWithExceptions : CNE_CodedWithNoExceptions
+        { 
+        }
+
+        public class SAD_StreetAddress
+        {
+            public string StreetOrMailingAddress { get; set; }
+            public string StreetName { get; set; }
+            public string DwellingNumber { get; set; }
+            public override string ToString()
+            {
+                return ToString('^');
+            }
+            public string ToString(char sepatator)
+            {
+                return $"{StreetOrMailingAddress}{sepatator}{StreetName}{sepatator}{DwellingNumber}";
+            }
+        }
+
+        public class XAD_ExtendedAddress
+        {
+            public SAD_StreetAddress StreetAddress { get; set; }
+            public string OtherDesignation { get; set; }
+            public string City { get; set; }
+            public string StateOrProvince { get; set; }
+            public string ZipOrPostalCode { get; set; }
+            public string Country { get; set; }
+            public string AddressType { get; set; }
+            public string OtherGeographicDesignation { get; set; }
+            public string CountyOrParishCode { get; set; }
+            public string CensusTract { get; set; }
+            public string AddressRepresentationCode { get; set; }
+            public DR_DateRange AddressValidityRange { get; set; }
+            public override string ToString()
+            {
+                return ToString('^');
+            }
+            public string ToString(char sepatator)
+            {
+                return $"{StreetAddress.ToString()}{sepatator}{OtherDesignation}{sepatator}{City}" +
+                    $"{sepatator}{StateOrProvince}{sepatator}{ ZipOrPostalCode}" +
+                    $"{sepatator}{Country}{sepatator}{AddressType}{sepatator}{OtherGeographicDesignation}" +
+                    $"{sepatator}{CountyOrParishCode}{sepatator}{CensusTract}{sepatator}{AddressValidityRange.ToString()}";
+            }
+        }
+
 
 
         public static HL7Element IndexedElement(this HL7Element element, int index = -1)
