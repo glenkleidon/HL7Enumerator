@@ -24,6 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
     <None Include="..\Resources\HL7 Enum.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
