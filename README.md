@@ -133,7 +133,15 @@ Returns as an Array of HL7Element containing all of the identifier fields.
 
 In contrast `PID.3` is equivalent to `PID.3[1]` 
 
-_This feature was release in Nuget Package Version 1.1.1 _
+*This feature was release in Nuget Package Version 1.1.1*
+
+## File Line Endings
+
+As of release *1.1.2* the Library is **agnostic** of line endings provided they are *consistent* across a file.  Prior to this
+release only the CR ($0D) line endings were properly supported. Despite the fact that the specification is clear that HL7 Messages **MUST**
+use only $0D (Carraige Return), consistent support is difficult due to common operating systems using different line endings by default.
+
+From this release, differences in file line endings can be safely ignored. 
 
 
 ## Implicit *string* Casting
