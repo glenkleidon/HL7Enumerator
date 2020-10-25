@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Xunit;
 
 namespace TestHL7Enumerator
@@ -12,6 +13,7 @@ namespace TestHL7Enumerator
         private const string OBR = @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L~1624^Smith^Bill^R||||||20061122154733|||F|||||||||||20061122140000|";
         private const string OBX1 = @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|";
         private const string OBX2 = @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
+        private const string OBX3 = @"OBX|3|FT|TEST^Test Message|\H\Test Message\N\Black \T\ White\X0D\||||||F|||20061122154733|";
 
         private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
         private const string MSHB = @"MSH|^~\&|MERIDIAN|Section1\\3\&4|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
@@ -21,6 +23,7 @@ namespace TestHL7Enumerator
         private const string Example1 = MSH + "\r" + PID + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
         private const string Example2 = MSHA + "\r" + PIDA + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
         private const string Example3 = MSHB + "\r" + PIDB + "\r" + PD1 + "\r" + OBR + "\r" + OBX1 + "\r" + OBX2 + "\r";
+        private const string Example4 = Example3 + OBX3 + "\r";
 
         [Fact]
         public void TestHL7Enumerator_Element_Segment_Text_returns_Correct_segment()
@@ -140,6 +143,17 @@ namespace TestHL7Enumerator
             Assert.Equal(MSHB, "" + msg.Element("MSH"));
 
             Assert.Equal(@"Section1\\3\&4", "" + msg.Element("MSH.4"));
+        }
+        [Fact]
+        public void Extract_Formatted_Text_from_OBX_WITH_CR_LF()
+        {
+            HL7Enumerator.HL7Message msg = Example4.Replace("\r", "\r\n");
+            var obxNames = msg.AllSegments("OBX").Select(o => o.Element("*.3.2")).ToArray();
+            var obxValues = msg.AllSegments("OBX").Select(o => o.Element("*.4")).ToArray();
+            Assert.Equal(3, obxNames.Count());
+            Assert.Equal(2, obxValues.Count(x => x.Value != null));
+            Assert.Equal(3, obxValues.Count(x => x.ToString() != null));
+
         }
 
 
