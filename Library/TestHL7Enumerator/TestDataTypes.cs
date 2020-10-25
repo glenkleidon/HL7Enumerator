@@ -29,8 +29,8 @@ namespace TestHL7Enumerator
         private const string PID3 = @"PID|||001677980||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|";
         private const string PD1 = @"PD1||||1234567890^LAST^FIRST^M^^^^^NPI|";
         private const string OBR3 = @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L~1624^Smith^Bill^R||||||20061122154733|||F|||||||||||20061122140000|";
-        private const string OBX3 = @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|";
-        private const string OBX4 = @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
+        private const string OBX3 = @"OBX|1|NM|GLU^Glucose Lvl||59|mg/dL|65-99^65^99|L|||F|||20061122154733|";
+        private const string OBX4 = @"OBX|2|NM|ALT^Alanine Aminotransferase||13|umol/L|2-20^65^1000|N|||F|||20061122154733|";
 
         private const string MSHA = @"MSH|^~\&|MERIDIAN|Demo Server|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
         private const string MSHB = @"MSH|^~\&|MERIDIAN|Section1\\3\&4|||20100202163120+1100||ORU^R01|XX02021630854-1539|P|2.3.1^AUS&&ISO^AS4700.2&&L|||||AUS|ASCII~8859/1";
@@ -171,10 +171,7 @@ namespace TestHL7Enumerator
             HL7Message mesg = OBR2;
             var obr = mesg.Element("OBR[1]");
             var xcns = obr.IndexedElement(16);
-           
             Assert.Throws<InvalidOperationException>( ()=> xcns.AsXCN());
-           
-
         }
 
         [Fact]
@@ -195,8 +192,57 @@ namespace TestHL7Enumerator
             var xcn2 = xcns[1].AsXCN();
             Assert.Equal("1620", xcn2.ID);
             Assert.Equal("McIntyre", xcn2.FamilyName);
-        
-            
+           
+        }
+
+        [Fact]
+        public void ShouldExtractNumbersFromNM()
+        {
+            HL7Message mesg = OBX3;
+            var obx = mesg.Element("OBX[1]");
+            var valueElement = obx.IndexedElement(5);
+            DataTypes.NM_Number number = valueElement;
+            Assert.True(number.IsNumber);
+            Assert.Equal(59, (int)number);
+            Assert.Equal((Int64)59, number.AsInt64());
+            Assert.Equal((float)59, number.AsFloat());
+            Assert.Equal(59M, number.AsDecimal());
+            Assert.Equal(59.0D, (double)number);
+           
+        }
+        [Fact]
+        public void ShouldAssignNumbersToNM()
+        {
+            var stringNumber = new DataTypes.NM_Number("21");
+            var intNumber = new DataTypes.NM_Number(212);
+            var int64Number = new DataTypes.NM_Number((Int64)2100000000003);
+            var floatNumber = new DataTypes.NM_Number(21.4);
+            var doubleNumber = new DataTypes.NM_Number(21.0000000005D);
+            var decimalNumber = new DataTypes.NM_Number(21.6666M);
+
+            Assert.True(stringNumber.IsNumber);
+            Assert.True(intNumber.IsNumber);
+            Assert.True(int64Number.IsNumber);
+            Assert.True(floatNumber.IsNumber);
+            Assert.True(doubleNumber.IsNumber);
+            Assert.True(decimalNumber.IsNumber);
+
+            Assert.Equal(212, intNumber.AsInteger());
+            Assert.Equal(2100000000003, int64Number.AsInt64());
+            Assert.True(floatNumber.AsFloat()- 21.4 < 0.01);
+            Assert.Equal(212,  intNumber.AsFloat());
+            Assert.Equal(21.0000000005D, doubleNumber.AsDouble());
+            Assert.Equal(21.6666M, decimalNumber.AsDecimal());
+            Assert.Equal(212, intNumber.AsInt64());
+
+            Assert.Equal(21, stringNumber.AsInteger());
+            Assert.Equal(21, stringNumber.AsInt64());
+            Assert.Equal(21.0, stringNumber.AsFloat());
+            Assert.Equal(21.0D, stringNumber.AsDouble());
+            Assert.Equal(21.0M, stringNumber.AsDecimal());
+
+            Assert.Equal(int.MinValue,decimalNumber.AsInteger());
+
         }
 
     }
