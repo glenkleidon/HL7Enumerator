@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using HL7Enumerator.Extensions;
 
 namespace HL7Enumerator
 {
@@ -50,15 +51,22 @@ namespace HL7Enumerator
 
         /// <summary>
         /// Carefully escape the separators ensuring that we dont escape the segment string
+        ///  and remove redundant LF if LineEnding is CRLF
         /// </summary>
         /// <param name="text"></param>
         /// <param name="separator"></param>
         /// <returns></returns>
         private static string ApplyEscape(string text, char separator, string separators) {
+            if (text.Length == 0) return String.Empty;
+            if (text[0].Equals('\n'))
+            {
+                text = text.Substring(1);
+            }
+
             var escapeChar = separators[separators.Length - 1];
             string escapeSequence = "" + escapeChar + separator;
             string escapeChar1 = ""+escapeChar+Convert.ToChar(1);
-            
+
             // is this the separator sequence?
             if (Constants.ToMSHSeparators(separators).Substring(1).Equals(text)) return text;
 
@@ -66,6 +74,7 @@ namespace HL7Enumerator
         }
 
         private static string RemoveEscape(string text, char separator) {
+            if (text.Length == 0) return "";
             return text.Replace((char)1, separator);
         }
 
@@ -78,7 +87,6 @@ namespace HL7Enumerator
             _parentElement = owner;
             var index = separators.IndexOf(separator);
             fieldRepetition = (index==2);
-
             if (LastSeparator(index, data, separators))
             {
                 this.value = data;
@@ -101,7 +109,7 @@ namespace HL7Enumerator
             StringBuilder result = new StringBuilder();
             foreach (HL7Element HL7Element in this) {
                 result.Append(HL7Element.ToString())
-                      .Append(Separator);
+                      .Append(Separator == '\n' ? '\r' : Separator);
             }
             // remove trailing remnants...
             var final = result.ToString().Substring(0, result.Length - 1);
@@ -195,36 +203,40 @@ namespace HL7Enumerator
         /// <returns></returns>
         public static string EscapeOBXCRLF(string text)
         {
+            var lineEndingSize = text.LineEnding().Length;
             var builder = new StringBuilder();
             var p = text.IndexOf("OBX|");
-            var processedToPosition = 0;
+            var messagePosition = 0;
             while (p >= 0)
             {
                 var q = p+1;
-                var rowsToProcess = false;
+                var hasRowsToEscape = false;
                 while (q >= 0)
                 {
-                    q = text.IndexOf('\r', q+1);
-                    var isPipe = (q <0 || q>text.Length-4 || text.Substring(q + 4, 1) == "|");
-                    if (isPipe && !rowsToProcess) break;
-                    if (!isPipe) 
+                    q = text.IndexOf('\r', q+4);
+                    var endOfObx = (q <0 || q>text.Length-4 || text.Substring(q + 3+lineEndingSize, 1) == "|");
+                    if (endOfObx)
                     {
-                       rowsToProcess = true;
+                        if (!hasRowsToEscape) break;
+                    }
+                    else 
+                    {
+                       hasRowsToEscape = true;
                        continue;
                     }
-                    // OK, this is a whole OBX escape the for this segment
                     if (q < 0) q = text.Length;
-                    builder.Append(text.Substring(processedToPosition, p-processedToPosition))
-                           .Append(text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\"));
-                    processedToPosition = q;
-                    rowsToProcess = false;
+                    var preText = text.Substring(messagePosition, p - messagePosition);
+                    var processText = text.Substring(p, q - p).Replace("\r", @"\X0D\").Replace("\n", @"\X0A\");
+                    builder.Append(preText).Append(processText);
+                    messagePosition = q;
+                    hasRowsToEscape = false;
                     break;
                 }
                 if (q < 0) break;
                 p = text.IndexOf("OBX|", q); // repeat for next one.
             }
-            if (processedToPosition != 0 && processedToPosition < text.Length)
-                builder.Append(text.Substring(processedToPosition, text.Length - processedToPosition)); 
+            if (messagePosition != 0 && messagePosition < text.Length)
+                builder.Append(text.Substring(messagePosition, text.Length - messagePosition)); 
             return (builder.Length == 0) ? text : builder.ToString();
         }
 
@@ -264,8 +276,11 @@ namespace HL7Enumerator
             if (mesg.Length<8) throw new ArgumentException("Not a complete HL7 message");
             var mesgHeader = mesg.Substring(0, 8);
             if (mesgHeader.Length < 8) throw new ArgumentException("Not a valid HL7 message");
+            var lineEndings = mesg.LineEnding();
+            var separators = ValidatedSeparators(mesgHeader);
+            if (lineEndings.Length > 0) separators = lineEndings[0]+separators.Substring(1);
 
-            _segments = new HL7Element(mesg, '\r', ValidatedSeparators(mesgHeader), null);
+            _segments = new HL7Element(mesg, separators[0], separators , null);
         }
 
         public static HL7Element ParseOnly(string mesg, SearchCriteria criteria)
@@ -322,7 +337,7 @@ namespace HL7Enumerator
         public List<HL7Element> AllSegments(string segmentType) {
             if (segmentType == null) return null;
             return Segments
-                   .FindAll(s => (s.Count > 0) && ( (s[0].Value!=null) && (s[0].Value.Equals(segmentType))));
+                   .FindAll(s => (s.Any()) && ( (s[0].Value!=null) && (s[0].Value.Equals(segmentType))));
         }
         /// <summary>
         /// Returns a specific field based on selection Criteria
