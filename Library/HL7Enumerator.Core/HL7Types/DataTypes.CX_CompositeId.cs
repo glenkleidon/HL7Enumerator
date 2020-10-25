@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
@@ -9,11 +11,11 @@ namespace HL7Enumerator.Types
             {
 
             }
-            public CX_CompositeId(HL7Element element)
+            public CX_CompositeId(HL7Element element, string checkDigitTableId=null)
             {
                 ID = element.ElementValue(0);
                 CheckDigit = element.ElementValue(1);
-                CheckDigitScheme = element.ElementValue(2);
+                CheckDigitScheme = new ID_CodedValue(element.ElementValue(2), checkDigitTableId);
                 AssigningAuthority = element.AsHD(3);
                 IdentifierTypeCode = element.ElementValue(4);
                 AssigningFacility = element.AsHD(5);
@@ -22,7 +24,7 @@ namespace HL7Enumerator.Types
             }
             public string ID { get; set; }
             public string CheckDigit { get; set; }
-            public string CheckDigitScheme { get; set; }
+            public ID_CodedValue CheckDigitScheme { get; set; }
             public HD_HierarchicDesignator AssigningAuthority { get; set; }
             public string IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
@@ -36,7 +38,7 @@ namespace HL7Enumerator.Types
             {
                 var ns = NextSeparator(separator);
                 return
-                    $"{ID}{separator}{CheckDigit}{separator}{CheckDigitScheme}{separator}" +
+                    $"{ID}{separator}{CheckDigit}{separator}{CheckDigitScheme.BestValue}{separator}" +
                     $"{AssigningAuthority.ToString(ns)}{separator}{AssigningFacility.ToString(ns)}" +
                     $"{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}";
             }

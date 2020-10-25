@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
 {
@@ -11,9 +12,9 @@ namespace HL7Enumerator.Types
 
             }
 
-            public XCN_ExtendedCompositeIDAndName(HL7Element element)
+            public XCN_ExtendedCompositeIDAndName(HL7Element element, IEnumerable<string> tableIds = null)
             {
-                if (element.Separator == '~')
+                if (element.IsRepeatingField)
                 {
                     throw new InvalidOperationException("AsXCN() called on repeating field.\r\n" +
                         " The Field in question should be treated as an Enumerable type");
@@ -25,18 +26,22 @@ namespace HL7Enumerator.Types
                 SecondGivenNamesOrInitials = element.ElementValue(3);
                 Suffix = element.ElementValue(4);
                 Prefix = element.ElementValue(5);
-                Degree = element.ElementValue(6);
+
+                var idIndex = 0;
+                Degree = new IS_CodedValue(element.ElementValue(6), NextTableId(tableIds, ref idIndex));
+
                 SourceTable = element.ElementValue(7);
                 AssigningAuthority = element.IndexedElement(8).AsHD();
-                NameTypeCode = element.ElementValue(9);
+                NameTypeCode = new ID_CodedValue(element.ElementValue(9), NextTableId(tableIds, ref idIndex));
                 IdentifierCheckDigit = element.ElementValue(10);
                 CheckDigitScheme = element.ElementValue(11);
                 IdentifierTypeCode = element.ElementValue(12);
                 AssigningFacility = element.IndexedElement(13).AsHD();
-                NameRepresentationCode = element.ElementValue(14);
+                NameRepresentationCode = new ID_CodedValue(element.ElementValue(14), 
+                    NextTableId(tableIds, ref idIndex));
                 NameContext = element.IndexedElement(15).AsCE();
                 NameValidityRange = element.IndexedElement(16).AsDateRange();
-                NameAssemblyOrder = element.ElementValue(0);
+                NameAssemblyOrder = new ID_CodedValue(element.ElementValue(17), NextTableId(tableIds, ref idIndex));
 
             }
             public string ID { get; set; }

@@ -59,6 +59,7 @@ namespace Example1
                     if (id.Count > 4) Console.WriteLine($"  IDType:{id[4]}");
                     if (id.Count > 3) Console.WriteLine($"  Issuer:{id[3]}");
                 }
+                //
 
 
              

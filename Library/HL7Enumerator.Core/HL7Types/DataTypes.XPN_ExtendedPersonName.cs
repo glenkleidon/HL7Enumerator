@@ -9,11 +9,11 @@
             public string SecondGivenNamesOrInitials { get; set; }
             public string Suffix { get; set; }
             public string Prefix { get; set; }
-            public string Degree { get; set; }
-            public string NameTypeCode { get; set; }
-            public string NameRepresentationCode { get; set; }
+            public IS_CodedValue Degree { get; set; }
+            public ID_CodedValue NameTypeCode { get; set; }
+            public ID_CodedValue NameRepresentationCode { get; set; }
             public CE_CodedElement NameContext { get; set; }
-            public string NameAssemblyOrder { get; set; }
+            public ID_CodedValue NameAssemblyOrder { get; set; }
             public override string ToString()
             {
                 return ToString('^');
@@ -23,9 +23,9 @@
                 var ns = NextSeparator(separator);
                 return
                     $"{FamilyName}{separator}{GivenName}{separator}{SecondGivenNamesOrInitials}" +
-                    $"{separator}{Suffix}{separator}{Prefix}{separator}{Degree}{separator}" +
-                    $"{NameTypeCode}{separator}{NameRepresentationCode}{separator}"+
-                    $"{NameContext.ToString(ns)}{separator}{NameAssemblyOrder}";
+                    $"{separator}{Suffix}{separator}{Prefix}{separator}{Degree.BestValue}{separator}" +
+                    $"{NameTypeCode.BestValue}{separator}{NameRepresentationCode.BestValue}{separator}"+
+                    $"{NameContext.ToString(ns)}{separator}{NameAssemblyOrder.BestValue}";
             }
         }
 

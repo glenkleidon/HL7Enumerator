@@ -15,9 +15,9 @@ namespace HL7Enumerator.Types
             {
                 var comparitor = element.ElementValue(0);
                 var separator = element.ElementValue(2);
-                Comparitor = (AllowedComparitors.Contains(comparitor)) ? comparitor : "";
+                Comparitor = (Constants.AllowedComparitors.Contains(comparitor)) ? comparitor : "";
                 Num1 = new NM_Number(element.IndexedElement(1));
-                SeparatorOrSuffix = (AllowedSeparators.Contains(separator)) ? separator : "";
+                SeparatorOrSuffix = (Constants.AllowedSeparators.Contains(separator)) ? separator : "";
                 Num2 = new NM_Number(element.IndexedElement(3));
             }
 

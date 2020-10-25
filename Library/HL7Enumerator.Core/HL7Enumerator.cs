@@ -26,6 +26,9 @@ namespace HL7Enumerator
             if (separators[0].Equals('\r')) sep = separators.Substring(1);
             return (new char[]  {sep[0], sep[2], sep[1],sep[4], sep[3]}).ToString();
         }
+        public static readonly string[] AllowedComparitors = new string[6] { "<", ">", "=>", "<=", "=", "<>" };
+        public static readonly string[] AllowedSeparators = new string[5] { "-", "+", "/", ".", ":" };
+
     }
 
     public class HL7Element : List<HL7Element> {
@@ -35,6 +38,7 @@ namespace HL7Enumerator
         private bool fieldRepetition = false;
         public char Separator { get { return _separator; } }
         public HL7Element Parent { get { return _parentElement; } }
+        public bool IsRepeatingField { get { return fieldRepetition; } }
 
         private string value;
         public string Value { get { return value; } }

@@ -9,8 +9,6 @@ namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        private static readonly string[] AllowedComparitors = new string[6] { "<", ">", "=>", "<=", "=", "<>" };
-        private static readonly string[] AllowedSeparators = new string[5] { "-", "+", "/", ".", ":" };
 
         /// <summary>
         /// Converts a DateTime to the LOCAL HL7 DT Format string (YYYYMMDD)  If the Local/Universal Kind 
@@ -174,11 +172,11 @@ namespace HL7Enumerator.Types
         /// <param name="element">Element representing or containing the HD Data</param>
         /// <param name="index">Optionally the sub element </param>
         /// <returns>A fully populated HL7 HD object</returns>
-        public static HD_HierarchicDesignator AsHD(this HL7Element element, int index = -1)
+        public static HD_HierarchicDesignator AsHD(this HL7Element element, int index = -1, IEnumerable<string> tableIds = null)
         {
             var el = element.IndexedElement(index);
             if (el == null) return null;
-            return new HD_HierarchicDesignator(el);
+            return new HD_HierarchicDesignator(el, tableIds);
         }
         /// <summary>
         /// Safely Extract a Date Range from the Supplied element assuming suitable contents;
@@ -245,6 +243,12 @@ namespace HL7Enumerator.Types
             {
                 return null;
             }
+        }
+        public static ICodedDataValue AsCodedValue(this HL7Element element, int index = -1, string tableId = "",
+              Dictionary<string, string> table = null)
+        {
+            string value = element.ElementValue(index);
+            return new CodedDataValue(value, table, tableId);
         }
         /// <summary>
         /// Safely return a DataTime from a HL7 Timestamp. NOTE: It is not usually necessary
@@ -467,6 +471,21 @@ namespace HL7Enumerator.Types
         {
             return new CX_CompositeId(element);
         }
+        public static IEnumerable<CX_CompositeId> AsCXs(this HL7Element element)
+        {
+            var cxs = new List<CX_CompositeId>();
+            if (element.IsRepeatingField)
+            {
+                cxs.AddRange(element.Select(e => new CX_CompositeId(e)));
+            }
+            else
+            {
+                cxs.Add(new CX_CompositeId(element));
+            }
+            return cxs;
+        }
+
+
         /// <summary>
         /// Safely Extract a ED (Encapsulated Data) from a HL7 Element Assuming suitable content (eg HL7 (ED) OBX[5])
         /// </summary>
@@ -486,6 +505,24 @@ namespace HL7Enumerator.Types
             return new XCN_ExtendedCompositeIDAndName(element);
         }
         /// <summary>
+        /// Safely Extract all HL7 XCN (Extended Composite ID and Name) from a HL7 Element assuming suitable content
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>An IEnumerable of HL7 XCN Objects</returns>
+        public static IEnumerable<XCN_ExtendedCompositeIDAndName> AsXCNs(this HL7Element element)
+        {
+            var xcns = new List<XCN_ExtendedCompositeIDAndName>();
+            if (element.IsRepeatingField)
+            {
+                xcns.AddRange(element.Select(e => new XCN_ExtendedCompositeIDAndName(e)));
+            }
+            else
+            {
+                xcns.Add(new XCN_ExtendedCompositeIDAndName(element));
+            }
+            return xcns;
+        }
+        /// <summary>
         /// Safely Extract a HL7 CE Coded Element type from a HL7 Element assuming sutiable content
         /// </summary>
         /// <param name="element"></param>
@@ -495,6 +532,38 @@ namespace HL7Enumerator.Types
             return new CE_CodedElement(element);
 
         }
+        /// <summary>
+        /// Safely Extract all HL7 CE Coded Elements type from a HL7 Element assuming sutiable content
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns>an IEnumerable of HL7 CE objects</returns>
+
+        public static IEnumerable<CE_CodedElement> AsCEs(this HL7Element element)
+        {
+            var ces = new List<CE_CodedElement>();
+            if (element.IsRepeatingField)
+            {
+                ces.AddRange(element.Select(e => new CE_CodedElement(e)));
+            }
+            else
+            {
+                ces.Add(new CE_CodedElement(element));
+            }
+            return ces;
+        }
+        public static string NextTableId(IEnumerable<string> tableIds, ref int index)
+        {
+            if (tableIds == null) return null;
+            // I am matching first to avoid enumerating it all if not needed.
+            var id = tableIds.Skip(index++).FirstOrDefault();
+            if (id == null)
+            {
+                index = 0;
+                id = tableIds.First();
+            }
+            return id;
+        }
+
     }
 }
 

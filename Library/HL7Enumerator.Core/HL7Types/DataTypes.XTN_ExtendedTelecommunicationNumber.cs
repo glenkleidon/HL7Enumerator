@@ -5,8 +5,8 @@
         public class XTN_ExtendedTelecommunicationNumber
         {
             public TN_TelephoneNumber TelephoneNumber { get; set; }
-            public string TelecommunicationUseCode { get; set; }
-            public string TelecommunicationEquipment { get; set; }
+            public ID_CodedValue TelecommunicationUseCode { get; set; }
+            public ID_CodedValue TelecommunicationEquipment { get; set; }
             public string EmailAddress { get; set; }
             public override string ToString()
             {
@@ -15,7 +15,8 @@
             public virtual string ToString(char separator)
             {
                 return
-                    $"{(string)TelephoneNumber}{separator}{TelecommunicationUseCode}{separator}{TelecommunicationEquipment}" +
+                    $"{(string)TelephoneNumber}{separator}{TelecommunicationUseCode.BestValue}"+
+                    $"{separator}{TelecommunicationEquipment.BestValue}" +
                     $"{separator}{EmailAddress}";
             }
         }
