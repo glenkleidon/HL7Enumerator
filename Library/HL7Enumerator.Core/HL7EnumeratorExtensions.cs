@@ -83,5 +83,13 @@ namespace HL7Enumerator.Extensions
                    );
         }
 
+        public static string LineEnding(this string text)
+        {
+            var crIndex = text.IndexOf('\r');
+            var lfIndex = text.IndexOf('\n');
+            if (crIndex < 0) return "\n";
+            if (lfIndex < 0) return "\r";
+            return (lfIndex == crIndex + 1) ? "\r\n" : "\r";
+        }
     }
 }

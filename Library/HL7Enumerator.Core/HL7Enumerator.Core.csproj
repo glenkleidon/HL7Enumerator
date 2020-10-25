@@ -14,12 +14,13 @@
     <RepositoryUrl>https://github.com/glenkleidon/HL7Enumerator</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>HL7, HL7 Linq, HL7 parser, c#</PackageTags>
-    <PackageReleaseNotes>Conversion from the Framework Library</PackageReleaseNotes>
+    <PackageReleaseNotes>Added support for Alternate Line Endings.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyVersion>1.0.1.1</AssemblyVersion>
-    <FileVersion>1.0.1.1</FileVersion>
-    <Version>1.1.1</Version>
+    <AssemblyVersion>1.0.1.2</AssemblyVersion>
+    <FileVersion>1.0.1.2</FileVersion>
+    <Version>1.1.2</Version>
+    <Copyright>Glen Kleidon</Copyright>
   </PropertyGroup>
 
   <ItemGroup>
