@@ -50,7 +50,7 @@ namespace HL7Enumerator.Types
             public string AlternateText { get; set; }
             public IS_CodedValue NameOfAlternateCodingSystem { get; set; }
 
-            public int TablesUsed => 2; // two ISs.
+            public int TablesRequired => 2; // two ISs.
 
             public override string ToString()
             {

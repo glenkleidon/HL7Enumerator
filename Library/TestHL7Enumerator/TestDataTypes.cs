@@ -265,10 +265,26 @@ namespace TestHL7Enumerator
             var xcns = obr.IndexedElement(16);
             Assert.Throws<InvalidOperationException>( ()=> xcns.AsXCN());
         }
-        [Fact(Skip ="To Do")]
-        public void ShouldConvertAnXAD()
+        [Fact]
+        public void ShouldConvertXADs()
         {
-            throw new NotImplementedException();
+            HL7Message mesg = PID1;
+            var pid = mesg.Element("PID[1]");
+            var addr = pid.IndexedElement(11);
+            var xadList = addr.AsXADs();
+            /*
+             119 SMITH STREET^^SWANSEE^NSW^2281^AUS^H^^^^^20140430121110+1000&20200131121008+1100
+             27 MANN AVENUE^^PATTERSON LAKES^NSW^3197^AUS^H^^^^^20150530121110+1000             
+             */
+
+            Assert.Equal(2, xadList.Count());
+            Assert.Equal("SWANSEE", xadList.FirstOrDefault().City);
+            Assert.StartsWith("2014", xadList.FirstOrDefault().AddressValidityRange.ToString());
+            Assert.Equal("AUS", xadList.Skip(1).FirstOrDefault().Country.BestValue);
+            Assert.Equal("H", xadList.FirstOrDefault().AddressType.BestValue);
+            Assert.Equal("2281", xadList.FirstOrDefault().ZipOrPostalCode);
+            Assert.Equal("3197", xadList.Skip(1).FirstOrDefault().ZipOrPostalCode);
+            Assert.Equal("27 MANN AVENUE", xadList.Skip(1).FirstOrDefault().StreetAddress.StreetOrMailingAddress);
         }
 
         [Fact]

@@ -28,7 +28,7 @@ namespace HL7Enumerator.Types
 
                 SourceTable = element.ElementValue(7);
                 AssigningAuthority = element.IndexedElement(8).AsHD(tableIds);
-                var hdTbls = new HD_HierarchicDesignator().TablesUsed;
+                var hdTbls = new HD_HierarchicDesignator().TablesRequired;
                 tblsUsed += hdTbls;
 
                 NameTypeCode = new ID_CodedValue(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
@@ -62,7 +62,7 @@ namespace HL7Enumerator.Types
             public string IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
             public DR_DateRange NameValidityRange { get; set; }
-            public int TablesUsed => (2 * new HD_HierarchicDesignator().TablesUsed);
+            public int TablesUsed => (2 * new HD_HierarchicDesignator().TablesRequired);
 
             public override string ToString(char separator)
             {

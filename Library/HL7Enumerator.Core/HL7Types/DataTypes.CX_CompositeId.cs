@@ -23,11 +23,11 @@ namespace HL7Enumerator.Types
                 CheckDigit = element.ElementValue(1);
                 CheckDigitScheme = new ID_CodedValue(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
                 AssigningAuthority = element.AsHD(3, tableIds?.Skip(tblsUsed));
-                if (AssigningAuthority != null) tblsUsed += AssigningAuthority.TablesUsed;
+                if (AssigningAuthority != null) tblsUsed += AssigningAuthority.TablesRequired;
 
                 IdentifierTypeCode = element.ElementValue(4);
                 AssigningFacility = element.AsHD(5, tableIds?.Skip(tblsUsed));
-                if (AssigningFacility!=null) tblsUsed += AssigningFacility.TablesUsed;
+                if (AssigningFacility!=null) tblsUsed += AssigningFacility.TablesRequired;
 
                 EffectiveDate = element.FromTS(6);
                 ExpirationDate = element.FromTS(7);
@@ -42,7 +42,7 @@ namespace HL7Enumerator.Types
             public DateTime? EffectiveDate { get; set; }
             public DateTime? ExpirationDate { get; set; }
 
-            public int TablesUsed => 1 + (2 * new HD_HierarchicDesignator().TablesUsed); //2Hds and 1 ID
+            public int TablesRequired => 1 + (2 * new HD_HierarchicDesignator().TablesRequired); //2Hds and 1 ID
 
             public override string ToString()
             {

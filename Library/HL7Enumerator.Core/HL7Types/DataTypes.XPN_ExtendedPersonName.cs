@@ -17,7 +17,7 @@ namespace HL7Enumerator.Types
             public CE_CodedElement NameContext { get; set; }
             public ID_CodedValue NameAssemblyOrder { get; set; }
 
-            public int TablesUsed => (2 * new CE_CodedElement().TablesUsed) + 4;
+            public int TablesRequired => (2 * new CE_CodedElement().TablesRequired) + 4;
             public XPN_ExtendedPersonName()
             {
 
@@ -40,7 +40,7 @@ namespace HL7Enumerator.Types
                 NameTypeCode = new ID_CodedValue(element.IndexedElement(6), NextTableId(tableIds, ref tblsUsed));
                 NameRepresentationCode = new ID_CodedValue(element.IndexedElement(7), NextTableId(tableIds, ref tblsUsed));
                 NameContext = element.IndexedElement(8).AsCE(tableIds);
-                tblsUsed += (new CE_CodedElement().TablesUsed);
+                tblsUsed += (new CE_CodedElement().TablesRequired);
                 NameAssemblyOrder = new ID_CodedValue(element.IndexedElement(9), NextTableId(tableIds, ref tblsUsed));
             }
 

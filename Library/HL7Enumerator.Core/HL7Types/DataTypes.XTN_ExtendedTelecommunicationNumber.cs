@@ -11,7 +11,7 @@ namespace HL7Enumerator.Types
             public ID_CodedValue TelecommunicationEquipment { get; set; }
             public string EmailAddress { get; set; }
 
-            public int TablesUsed => 2; // 2 IDs
+            public int TablesRequired => 2; // 2 IDs
             public XTN_ExtendedTelecommunicationNumber()
             {
 

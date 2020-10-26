@@ -21,7 +21,7 @@ namespace HL7Enumerator.Types
             public ID_CodedValue AddressRepresentationCode { get; set; }
             public DR_DateRange AddressValidityRange { get; set; }
 
-            public int TablesUsed => 5;// 3 Ids and 2 ISs;
+            public int TablesRequired => 5;// 3 Ids and 2 ISs;
             public XAD_ExtendedAddress()
             {
 

@@ -28,7 +28,7 @@ namespace HL7Enumerator.Types
             public string UniversalId { get; set; }
             public ID_CodedValue UniversalIdType { get; set; }
 
-            public int TablesUsed => 2; // 2 ISs used.
+            public int TablesRequired => 2; // 2 ISs used.
 
             public override string ToString()
             {

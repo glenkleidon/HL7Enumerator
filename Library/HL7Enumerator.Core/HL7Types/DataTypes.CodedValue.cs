@@ -1,4 +1,4 @@
-﻿using HL7Enumerator.Core.HL7Tables;
+﻿using HL7Enumerator.HL7Tables;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -9,8 +9,8 @@ namespace HL7Enumerator.Types
         public class CodedDataValue : ICodedDataValue
         {
 
-            private  string tableId;
-            private  Dictionary<string, string> table;
+            protected string tableId;
+            protected Dictionary<string, string> table;
             public CodedDataValue()
             {
             }

@@ -320,6 +320,7 @@ namespace HL7Enumerator.Types
             return $"{iso}{dateText.Substring(14)}{zone}";
 
         }
+
         /// <summary>
         /// Extract the TIMEZONE String in ISO Format from the HL7 Timestamp and
         /// return the HL7 TS Excluding the TZ portion.
@@ -555,6 +556,25 @@ namespace HL7Enumerator.Types
             }
             return ces;
         }
+        public static XAD_ExtendedAddress AsXAD(this HL7Element element, IEnumerable<string> tableIds = null)
+        {
+            return new XAD_ExtendedAddress(element, tableIds);
+        }
+
+        public static IEnumerable<XAD_ExtendedAddress> AsXADs(this HL7Element element, IEnumerable<string> tableIds = null)
+        {
+            var xads = new List<XAD_ExtendedAddress>();
+            if (element.IsRepeatingField)
+            {
+                xads.AddRange(element.Select(e => new XAD_ExtendedAddress(e, tableIds)));
+            }
+            else
+            {
+                xads.Add(new XAD_ExtendedAddress(element, tableIds));
+            }
+            return xads;
+        }
+
         public static string NextTableId(IEnumerable<string> tableIds, ref int index)
         {
             if (tableIds == null) return null;

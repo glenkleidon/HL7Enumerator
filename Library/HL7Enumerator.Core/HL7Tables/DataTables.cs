@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 
-namespace HL7Enumerator.Core.HL7Tables
+namespace HL7Enumerator.HL7Tables
 {
     public static class DataTables
     {

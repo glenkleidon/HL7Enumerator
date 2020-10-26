@@ -11,7 +11,7 @@ namespace HL7Enumerator.Types
            public CE_CodedElement Internationalization { get; set; }
            public CE_CodedElement InternationalVersionID { get; set; }
 
-            public int TablesUsed => 1 + (2 * new CE_CodedElement().TablesUsed); // 2 CEs and 1 ID
+            public int TablesRequired => 1 + (2 * new CE_CodedElement().TablesRequired); // 2 CEs and 1 ID
 
             public VID_VersionIdentifier()
             {
@@ -26,7 +26,7 @@ namespace HL7Enumerator.Types
                 var tblsUsed = 0;
                 VersionID = new ID_CodedValue(element.ElementValue(0), NextTableId(tableIds,ref tblsUsed));
                 Internationalization = new CE_CodedElement(element.IndexedElement(1), tableIds?.Skip(tblsUsed));
-                tblsUsed += Internationalization.TablesUsed;
+                tblsUsed += Internationalization.TablesRequired;
                 InternationalVersionID = new CE_CodedElement(element.IndexedElement(2), tableIds?.Skip(tblsUsed));
             }
 
