@@ -8,8 +8,9 @@ namespace HL7Enumerator.Types
     {
         public class CodedDataValue : ICodedDataValue
         {
-            private readonly string tableId;
-            private readonly Dictionary<string, string> table;
+
+            private  string tableId;
+            private  Dictionary<string, string> table;
             public CodedDataValue()
             {
             }
@@ -23,19 +24,18 @@ namespace HL7Enumerator.Types
                 this.table = table;
                 this.tableId = tableId;
                 LinkTable();
-                if (table == null) this.table = DataTables.GetCodeTable(tableId);
             }
             public CodedDataValue(string value, Dictionary<string, string> table, string tableId = null)
             {
                 this.table = table;
                 this.tableId = tableId;
                 LinkTable();
-                if (table == null) this.table = DataTables.GetCodeTable(tableId);
                 Value = value;
             }
 
             protected void LinkTable()
             {
+                if (table == null) this.table = DataTables.GetCodeTable(tableId);
                 if (!string.IsNullOrWhiteSpace(tableId) && table != null)
                     DataTables.AddUpdateCodeTable(tableId, table);
             }
@@ -66,7 +66,23 @@ namespace HL7Enumerator.Types
                 }
             }
 
-            public string TableId => tableId;
+
+            public string TableId { 
+                get => tableId; 
+                set 
+                { 
+                    tableId = Value;
+                    LinkTable(); 
+                } 
+            }
+            public Dictionary<string, string> Table { 
+                get => table; 
+                set  
+                {
+                    table = value;
+                    LinkTable();
+                } 
+            }
 
             public override string ToString()
             {

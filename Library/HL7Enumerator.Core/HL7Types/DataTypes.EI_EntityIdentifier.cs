@@ -4,12 +4,15 @@ namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class EI_EntityIdentifier
+        public class EI_EntityIdentifier: IHL7Type
         {
             public string Identifier { get; set; }
             public IS_CodedValue NamespaceId { get; set; }
             public string UniversalId { get; set; }
             public ID_CodedValue UniversalIdType { get; set; }
+
+            public int TablesUsed => 2; // 1 IS and 1 ID
+
             public override string ToString()
             {
                 return ToString('^');
@@ -20,20 +23,25 @@ namespace HL7Enumerator.Types
             }
             public EI_EntityIdentifier(HL7Element element, IEnumerable<string> tableIds=null)
             {
-                Identifier = element.ElementValue(0);
-                
-                var idIndex = 0;
-                NamespaceId = new IS_CodedValue(
-                    element.ElementValue(1), NextTableId(tableIds, ref idIndex));
-                
-                UniversalId = element.ElementValue(2);
-
-                UniversalIdType = new ID_CodedValue(element.ElementValue(3),
-                      NextTableId(tableIds, ref idIndex));
+                Populate(element, tableIds);
             }
             public string ToString(char separator)
             {
                 return $"{Identifier}{separator}{NamespaceId.BestValue}{separator}{UniversalId}{separator}{UniversalIdType.BestValue}";
+            }
+
+            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            {
+                Identifier = element.ElementValue(0);
+
+                var tblsUsed = 0;
+                NamespaceId = new IS_CodedValue(
+                    element.ElementValue(1), NextTableId(tableIds, ref tblsUsed));
+
+                UniversalId = element.ElementValue(2);
+
+                UniversalIdType = new ID_CodedValue(element.ElementValue(3),
+                      NextTableId(tableIds, ref tblsUsed));
             }
         }
 

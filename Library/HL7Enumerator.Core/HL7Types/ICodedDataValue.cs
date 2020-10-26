@@ -1,4 +1,6 @@
-﻿namespace HL7Enumerator.Types
+﻿using System.Collections.Generic;
+
+namespace HL7Enumerator.Types
 {
     public interface ICodedDataValue
     {
@@ -7,6 +9,7 @@
         bool? IsValid { get; }
         string Value { get; set; }
         string BestValue { get; }
-        string TableId { get; }
-    }
+        string TableId { get; set; }
+        Dictionary<string, string> Table { get; set; }
+      }
 }

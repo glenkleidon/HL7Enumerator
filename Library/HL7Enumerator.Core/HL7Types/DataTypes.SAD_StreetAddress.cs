@@ -15,6 +15,12 @@
             {
                 return $"{StreetOrMailingAddress}{sepatator}{StreetName}{sepatator}{DwellingNumber}";
             }
+            public SAD_StreetAddress(HL7Element element)
+            {
+                StreetOrMailingAddress = element.ElementValue(0);
+                StreetName = element.ElementValue(1);
+                DwellingNumber = element.ElementValue(2);
+            }
         }
 
     }

@@ -1,26 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class CX_CompositeId
+        public class CX_CompositeId : IHL7Type
         {
             public CX_CompositeId()
             {
 
             }
-            public CX_CompositeId(HL7Element element, string checkDigitTableId=null)
+            public CX_CompositeId(HL7Element element, IEnumerable<string> tableIds = null)
             {
+                Populate(element, tableIds);
+            }
+            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            {
+                var tblsUsed = 0;
                 ID = element.ElementValue(0);
                 CheckDigit = element.ElementValue(1);
-                CheckDigitScheme = new ID_CodedValue(element.ElementValue(2), checkDigitTableId);
-                AssigningAuthority = element.AsHD(3);
+                CheckDigitScheme = new ID_CodedValue(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
+                AssigningAuthority = element.AsHD(3, tableIds?.Skip(tblsUsed));
+                if (AssigningAuthority != null) tblsUsed += AssigningAuthority.TablesUsed;
+
                 IdentifierTypeCode = element.ElementValue(4);
-                AssigningFacility = element.AsHD(5);
+                AssigningFacility = element.AsHD(5, tableIds?.Skip(tblsUsed));
+                if (AssigningFacility!=null) tblsUsed += AssigningFacility.TablesUsed;
+
                 EffectiveDate = element.FromTS(6);
                 ExpirationDate = element.FromTS(7);
+
             }
             public string ID { get; set; }
             public string CheckDigit { get; set; }
@@ -30,6 +41,9 @@ namespace HL7Enumerator.Types
             public HD_HierarchicDesignator AssigningFacility { get; set; }
             public DateTime? EffectiveDate { get; set; }
             public DateTime? ExpirationDate { get; set; }
+
+            public int TablesUsed => 1 + (2 * new HD_HierarchicDesignator().TablesUsed); //2Hds and 1 ID
+
             public override string ToString()
             {
                 return ToString('^');

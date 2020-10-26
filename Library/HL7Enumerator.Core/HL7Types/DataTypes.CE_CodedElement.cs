@@ -4,8 +4,9 @@ namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class CE_CodedElement
+        public class CE_CodedElement : IHL7Type
         {
+
             public CE_CodedElement()
             {
 
@@ -19,23 +20,27 @@ namespace HL7Enumerator.Types
             /// <param name="tableIds">The list of required table names For IS and ID data types
             /// in the order they appear in the element. If All values use the same Table, it may 
             /// be added once.</param>
-            public CE_CodedElement(HL7Element element, IEnumerable<string> tableIds=null)
+            public CE_CodedElement(HL7Element element, IEnumerable<string> tableIds = null)
             {
-                
+                Populate(element, tableIds);
+            }
+            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            {
+                var tablesUsed = 0;
                 Identifier = element.ElementValue(0);
-                
+
                 Text = element.ElementValue(1);
 
-                var idIndex = 0;
                 NameOfCodingSystem = new IS_CodedValue(
-                    element.ElementValue(2), NextTableId(tableIds,ref idIndex));
+                    element.ElementValue(2), NextTableId(tableIds, ref tablesUsed));
 
                 AlternateIdentifier = element.ElementValue(3);
 
                 AlternateText = element.ElementValue(4);
 
-                NameOfAlternateCodingSystem = new IS_CodedValue( 
-                    element.ElementValue(5), NextTableId(tableIds, ref idIndex));
+                NameOfAlternateCodingSystem = new IS_CodedValue(
+                    element.ElementValue(5), NextTableId(tableIds, ref tablesUsed));
+
             }
 
             public string Identifier { get; set; }
@@ -44,12 +49,15 @@ namespace HL7Enumerator.Types
             public string AlternateIdentifier { get; set; }
             public string AlternateText { get; set; }
             public IS_CodedValue NameOfAlternateCodingSystem { get; set; }
+
+            public int TablesUsed => 2; // two ISs.
+
             public override string ToString()
             {
                 return ToString('^');
             }
             public virtual string ToString(char sepatator)
-            { 
+            {
                 return $"{Identifier}{sepatator}{Text}{sepatator}{NameOfCodingSystem.BestValue}" +
                     $"{sepatator}{AlternateIdentifier}{sepatator}{AlternateText}" +
                     $"{sepatator}{NameOfAlternateCodingSystem.BestValue}";

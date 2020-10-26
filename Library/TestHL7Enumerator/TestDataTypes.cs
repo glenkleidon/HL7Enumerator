@@ -197,7 +197,7 @@ namespace TestHL7Enumerator
             //MIA^Image^PDF^Base64
             Assert.Equal("MIA", hl7Ed.SourceApplication.NamespaceId.BestValue);
             Assert.Equal("Image", hl7Ed.TypeOfData.BestValue);
-            Assert.Equal("PDF", hl7Ed.DataSybType.BestValue);
+            Assert.Equal("PDF", hl7Ed.DataSubType.BestValue);
             Assert.Equal("Base64", hl7Ed.Encoding.BestValue);
             Assert.StartsWith("JVBERi0xLjQKJeLjz9", hl7Ed.Data, StringComparison.InvariantCultureIgnoreCase);
         }

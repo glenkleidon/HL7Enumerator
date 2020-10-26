@@ -178,6 +178,10 @@ namespace HL7Enumerator.Types
             if (el == null) return null;
             return new HD_HierarchicDesignator(el, tableIds);
         }
+        public static HD_HierarchicDesignator AsHD(this HL7Element element, IEnumerable<string> tableIds = null)
+        {
+            return new HD_HierarchicDesignator(element, tableIds);
+        }
         /// <summary>
         /// Safely Extract a Date Range from the Supplied element assuming suitable contents;
         /// </summary>
@@ -527,9 +531,9 @@ namespace HL7Enumerator.Types
         /// </summary>
         /// <param name="element"></param>
         /// <returns>a HL7 CE object</returns>
-        public static CE_CodedElement AsCE(this HL7Element element)
+        public static CE_CodedElement AsCE(this HL7Element element, IEnumerable<string> tableIds = null)
         {
-            return new CE_CodedElement(element);
+            return new CE_CodedElement(element, tableIds);
 
         }
         /// <summary>
@@ -538,16 +542,16 @@ namespace HL7Enumerator.Types
         /// <param name="element"></param>
         /// <returns>an IEnumerable of HL7 CE objects</returns>
 
-        public static IEnumerable<CE_CodedElement> AsCEs(this HL7Element element)
+        public static IEnumerable<CE_CodedElement> AsCEs(this HL7Element element, IEnumerable<string> tableIds = null)
         {
             var ces = new List<CE_CodedElement>();
             if (element.IsRepeatingField)
             {
-                ces.AddRange(element.Select(e => new CE_CodedElement(e)));
+                ces.AddRange(element.Select(e => new CE_CodedElement(e, tableIds)));
             }
             else
             {
-                ces.Add(new CE_CodedElement(element));
+                ces.Add(new CE_CodedElement(element, tableIds));
             }
             return ces;
         }
