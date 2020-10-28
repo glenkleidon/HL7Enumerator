@@ -580,6 +580,7 @@ namespace HL7Enumerator.Types
             }
             return xads;
         }
+        
 
         internal static string NextTableId(IEnumerable<string> tableIds, ref int index)
         {

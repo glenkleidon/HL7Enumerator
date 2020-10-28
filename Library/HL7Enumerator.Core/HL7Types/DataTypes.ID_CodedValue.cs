@@ -12,7 +12,7 @@ namespace HL7Enumerator.Types
             {
 
             }
-            public ID_CodedValue(string value, string tableId, IDataTableProvider tables=null) : base(value, tableId, tables)
+            public ID_CodedValue(string value, string tableId=null, IDataTableProvider tables=null) : base(value, tableId, tables)
             { 
             }
             public ID_CodedValue(Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null) : base(table, tableId, tables)
@@ -21,6 +21,11 @@ namespace HL7Enumerator.Types
             public ID_CodedValue(string value, Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null): base(value, table, tableId, tables)
             {
             }
+            public static implicit operator ID_CodedValue(string value)
+            {
+                return new ID_CodedValue(value);
+            }
+
         }
     }
 }

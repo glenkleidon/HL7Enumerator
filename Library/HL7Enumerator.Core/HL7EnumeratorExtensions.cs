@@ -89,5 +89,6 @@ namespace HL7Enumerator.Extensions
             if (lfIndex < 0) return "\r";
             return (lfIndex == crIndex + 1) ? "\r\n" : "\r";
         }
+        
     }
 }

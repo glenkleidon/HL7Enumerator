@@ -32,7 +32,7 @@ namespace HL7Enumerator
     }
 
     public class HL7Element : List<HL7Element> {
-        private char _separator;
+        protected char _separator;
         private string _separators;
         private HL7Element _parentElement;
         private bool fieldRepetition = false;
@@ -40,7 +40,7 @@ namespace HL7Enumerator
         public HL7Element Parent { get { return _parentElement; } }
         public bool IsRepeatingField { get { return fieldRepetition; } }
 
-        private string value;
+        protected string value;
         public string Value { get { return value; } }
 
         private bool LastSeparator(int index, string data, string separators)
@@ -86,11 +86,15 @@ namespace HL7Enumerator
 
         public HL7Element(string data, char separator, string separators = Constants.Separators, HL7Element owner = null)
         {
+            AddStringElements(data, separator, separators, owner);
+        }
+        protected void AddStringElements(string data, char separator, string separators = Constants.Separators, HL7Element owner = null)
+        {
             _separator = separator;
             _separators = separators;
             _parentElement = owner;
             var index = separators.IndexOf(separator);
-            fieldRepetition = (index==2);
+            fieldRepetition = (index == 2);
             if (LastSeparator(index, data, separators))
             {
                 this.value = data;
@@ -106,6 +110,36 @@ namespace HL7Enumerator
                 this.Add(new HL7Element(RemoveEscape(s, separator), nextChar, separators, this));
             }
         }
+        public HL7Element SetValue(string value, int index = -1)
+        {
+            if (index<0)
+            {
+                this.value = value;
+                return null;
+            }
+
+            var newIndex = SetElement(new HL7Element(value, Separator), index);
+            return (newIndex < 0) ? null : this[newIndex];
+        }
+
+        public int SetElement(HL7Element element, int index)
+        {
+            if (index < -1) throw new IndexOutOfRangeException("Element Index must be greater or equal to 0");
+            var result = index;
+            if (this.Count > index)
+            {
+                this[index] = element;
+            }
+            else
+            {
+                for (var i = Count - 1; i < index; i++) Add(new HL7Element());
+                Add(element);
+                result = Count - 1;
+            }
+            return result;
+        }
+
+
 
         public override string ToString()
         {
@@ -404,9 +438,63 @@ namespace HL7Enumerator
                 msg._segments.ToString()
                 );
         }
+    }
+    public class HL7Segment : HL7Element
+    {
+        public HL7Segment()
+        {
+            _separator = '|';
+        }
+        public HL7Segment(string segmentId, int setId = 0)
+        {
+            ID = segmentId;
+        }
+        public HL7Segment(string data, char separator, string separators = Constants.Separators, HL7Element owner = null)
+        {
+            AddStringElements(data, separator, separators, owner);
+        }
+        public HL7Element AddField(int index, string value)
+        {
+           var newIndex = AddFieldElement(index, new HL7Element(value, Separator));
+            return this[newIndex];
+        }
+        public int AddFieldElement(int index, HL7Element value)
+        {
+            this.SetValue()
+        }
+        public UInt32 SetId {
+            get
+            {
+                var setId = this.Skip(1)?.First();
+                if (setId == null) return 0;
+                UInt32 result;
+                return (UInt32.TryParse(setId, out result)) ? result : 0; 
+            }
+            set
+            {
+                if (this.Any()) this[0].SetValue(value.ToString());
+            }
+        }
 
+        
+
+        public string ID { 
+            get => this.FirstOrDefault()?.ToString().Substring(0,3);
+            set 
+            {
+                if (value?.Length != 3) throw new FormatException("Segment ID Must be 3 characters");
+                this.value = value;
+            } 
+        }
+        
+
+        public static implicit operator HL7Segment(string segmentText)
+        {
+            return new HL7Segment(segmentText, Constants.Separators[1]);
+        }
     }
 
 
-    
+
+
 }

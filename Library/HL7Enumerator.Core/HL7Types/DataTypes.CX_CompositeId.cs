@@ -60,6 +60,10 @@ namespace HL7Enumerator.Types
                     $"{AssigningAuthority.ToString(ns)}{separator}{AssigningFacility.ToString(ns)}" +
                     $"{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}";
             }
+            public static implicit operator HL7Element(CX_CompositeId cx)
+            {
+                return (HL7Element)cx.ToString();
+            }
         }
 
     }
