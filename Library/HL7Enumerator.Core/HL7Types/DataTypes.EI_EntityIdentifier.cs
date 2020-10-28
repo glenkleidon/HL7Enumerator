@@ -1,5 +1,6 @@
 ﻿using HL7Enumerator.HL7Tables.Interfaces;
 using HL7Enumerator.Types.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
@@ -31,7 +32,9 @@ namespace HL7Enumerator.Types
             }
             public string ToString(char separator)
             {
-                return $"{Identifier}{separator}{NamespaceId.BestValue}{separator}{UniversalId}{separator}{UniversalIdType.BestValue}";
+                return $"{Identifier}{separator}{NamespaceId?.BestValue}{separator}{UniversalId}{separator}{UniversalIdType?.BestValue}"
+                    .TrimEnd(separator);
+               
             }
 
             public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)

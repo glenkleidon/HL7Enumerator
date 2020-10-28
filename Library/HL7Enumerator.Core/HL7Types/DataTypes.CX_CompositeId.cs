@@ -56,9 +56,11 @@ namespace HL7Enumerator.Types
             {
                 var ns = NextSeparator(separator);
                 return
-                    $"{ID}{separator}{CheckDigit}{separator}{CheckDigitScheme.BestValue}{separator}" +
-                    $"{AssigningAuthority.ToString(ns)}{separator}{AssigningFacility.ToString(ns)}" +
-                    $"{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}";
+                    $"{ID}{separator}{CheckDigit}{separator}{CheckDigitScheme?.BestValue}{separator}" +
+                    $"{AssigningAuthority?.ToString(ns)}{separator}{IdentifierTypeCode}{separator}{AssigningFacility?.ToString(ns)}" +
+                    $"{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}"
+                    .TrimEnd(separator);
+
             }
             public static implicit operator HL7Element(CX_CompositeId cx)
             {

@@ -50,12 +50,13 @@ namespace HL7Enumerator.Types
             {
                 return ToString('^');
             }
-            public virtual string ToString(char sepatator)
+            public virtual string ToString(char separator)
             {
-                return $"{OrganizationName}{sepatator}{OrganizationNameTypeCode.BestValue}{sepatator}{ID}" +
-                    $"{sepatator}{CheckDigit}{sepatator}{CheckDigitScheme.BestValue}" +
-                    $"{sepatator}{AssigningAuthority.ToString()}{sepatator}{IdentifierTypeCode.BestValue}" +
-                    $"{sepatator}{AssigningFacility.ToString()}";
+                return $"{OrganizationName}{separator}{OrganizationNameTypeCode?.BestValue}{separator}{ID}" +
+                    $"{separator}{CheckDigit}{separator}{CheckDigitScheme?.BestValue}" +
+                    $"{separator}{AssigningAuthority?.ToString()}{separator}{IdentifierTypeCode?.BestValue}" +
+                    $"{separator}{AssigningFacility?.ToString()}"
+                    .TrimEnd(separator);
             }
         }
 

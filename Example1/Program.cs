@@ -69,7 +69,7 @@ namespace Example1
                 //Compose a Segment - create extension methods to this more cleanly
                 // create "PID1||||1234567890^LAST^FIRST^M^^^^^NPI|
 
-                var patientIdentifiers = new List<CX_CompositeId>();
+                var patientIdentifiers = new List<CX_CompositeId>()
                 {
                     new CX_CompositeId()
                     {
@@ -79,45 +79,23 @@ namespace Example1
                         AssigningAuthority = new HD_HierarchicDesignator() { NamespaceId = "ADT01" },
                         IdentifierTypeCode = "MR",
                         AssigningFacility = new HD_HierarchicDesignator() { NamespaceId = "University Hospital" }
-                    };
+                    },
                     new CX_CompositeId()
                     {
                         ID = "8003608833357361",
                         AssigningAuthority = new HD_HierarchicDesignator() { NamespaceId = "AUSHIC" },
                         IdentifierTypeCode = "NI"
-                    };
-                }
+                    }
+                };
+                
+            
 
+                // Compose a PID 
                 var pid = new HL7Segment("PID");
-                pid.AddRange
-                (
-                    patientIdentifiers.First(),
-                    patientIdentifiers,
+                pid.SetField(2, patientIdentifiers.First());
+                pid.SetField(3, patientIdentifiers.AsElement());
 
-                );
-
-
-
-                HL7Element pd1 = new HL7Element(null, '|');
-                pd1.Add(new HL7Element("PD1", '~'));
-                pd1.Add(new HL7Element("", '~'));
-                pd1.Add(new HL7Element("", '~'));
-                pd1.Add(new HL7Element("", '~'));
-                HL7Element patientField = new HL7Element(null, '~');
-                pd1.Add(patientField);
-                HL7Element patient = new HL7Element(null, '^');
-                patientField.Add(patient);
-                patient.Add(new HL7Element("1234567890", '&' ));
-                patient.Add(new HL7Element("LAST", '&'));
-                patient.Add(new HL7Element("FIRST", '&'));
-                patient.Add(new HL7Element("M", '&'));
-                patient.Add(new HL7Element("", '&'));
-                patient.Add(new HL7Element("", '&'));
-                patient.Add(new HL7Element("", '&'));
-                patient.Add(new HL7Element("", '&'));
-                patient.Add(new HL7Element("NPI", '&'));
-
-                Console.WriteLine("\r\nComposed PD1: " + pd1);
+                Console.WriteLine("\r\nComposed PID: " + pid);
             } catch (Exception e) 
             {
                 Console.WriteLine("Unexpected exception : {0}", e.Message );

@@ -13,7 +13,8 @@ namespace HL7Enumerator.Types
             }
             public string ToString(char separator)
             {
-                return $"{DateFrom?.AsTSLocal()}{separator}{DateTo?.AsTSLocal()}";
+                return $"{DateFrom?.AsTSLocal()}{separator}{DateTo?.AsTSLocal()}".TrimEnd(separator);
+                
             }
         }
 

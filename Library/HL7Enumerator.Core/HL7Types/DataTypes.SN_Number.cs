@@ -29,9 +29,10 @@ namespace HL7Enumerator.Types
             {
                 return ToString('^');
             }
-            public string ToString(char sepatator)
+            public string ToString(char separator)
             {
-                return $"{Comparitor}{sepatator}{Num1.Value}{sepatator}{SeparatorOrSuffix}{sepatator}{Num2.Value}";
+                return $"{Comparitor}{separator}{Num1?.Value}{separator}{SeparatorOrSuffix}{separator}{Num2?.Value}"
+                    .TrimEnd(separator);
             }
         }
 

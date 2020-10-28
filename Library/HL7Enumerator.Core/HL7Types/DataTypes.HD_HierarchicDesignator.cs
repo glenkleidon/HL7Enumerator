@@ -37,7 +37,9 @@ namespace HL7Enumerator.Types
             }
             public string ToString(char separator)
             {
-                return $"{NamespaceId.BestValue}^{UniversalId}^{UniversalIdType.BestValue}";
+                return $"{NamespaceId?.BestValue}{separator}{UniversalId}{separator}{UniversalIdType?.BestValue}"
+                    .TrimEnd(separator);
+                
             }
         }
 

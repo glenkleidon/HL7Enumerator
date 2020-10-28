@@ -56,13 +56,14 @@ namespace HL7Enumerator.Types
             {
                 return ToString('^');
             }
-            public string ToString(char sepatator)
+            public string ToString(char separator)
             {
-                return $"{StreetAddress.ToString()}{sepatator}{OtherDesignation}{sepatator}{City}" +
-                    $"{sepatator}{StateOrProvince}{sepatator}{ZipOrPostalCode}" +
-                    $"{sepatator}{Country.BestValue}{sepatator}{AddressType.BestValue}{sepatator}{OtherGeographicDesignation}" +
-                    $"{sepatator}{CountyOrParishCode.BestValue}{sepatator}{CensusTract.BestValue}{sepatator}" +
-                    $"{AddressRepresentationCode.BestValue}{sepatator}{AddressValidityRange.ToString()}";
+                return $"{StreetAddress?.ToString()}{separator}{OtherDesignation}{separator}{City}" +
+                    $"{separator}{StateOrProvince}{separator}{ZipOrPostalCode}" +
+                    $"{separator}{Country?.BestValue}{separator}{AddressType?.BestValue}{separator}{OtherGeographicDesignation}" +
+                    $"{separator}{CountyOrParishCode?.BestValue}{separator}{CensusTract?.BestValue}{separator}" +
+                    $"{AddressRepresentationCode?.BestValue}{separator}{AddressValidityRange?.ToString()}"
+                    .TrimEnd(separator);
             }
         }
 

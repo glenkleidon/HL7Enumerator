@@ -11,9 +11,9 @@
             {
                 return ToString('^');
             }
-            public string ToString(char sepatator)
+            public string ToString(char separator)
             {
-                return $"{StreetOrMailingAddress}{sepatator}{StreetName}{sepatator}{DwellingNumber}";
+                return $"{StreetOrMailingAddress}{separator}{StreetName}{separator}{DwellingNumber}".TrimEnd(separator);
             }
             public SAD_StreetAddress(HL7Element element)
             {

@@ -41,7 +41,8 @@ namespace HL7Enumerator.Types
             public virtual string ToString(char separator)
             {
                 return
-                    $"{VersionID}{separator}{Internationalization.ToString()}{separator}{InternationalVersionID.ToString()}";
+                    $"{VersionID}{separator}{Internationalization?.ToString()}{separator}{InternationalVersionID?.ToString()}"
+                    .TrimEnd(separator);
             }
 
         }

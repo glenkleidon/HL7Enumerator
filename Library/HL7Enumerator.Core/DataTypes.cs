@@ -580,7 +580,14 @@ namespace HL7Enumerator.Types
             }
             return xads;
         }
-        
+
+        public static HL7Element AsElement(this IEnumerable<CX_CompositeId> cxs)
+        {
+            var element = new HL7Element(String.Empty, '~');
+            if (cxs.Any()) foreach (var cx in cxs) element.Add(cx);
+            return element;
+        }
+
 
         internal static string NextTableId(IEnumerable<string> tableIds, ref int index)
         {

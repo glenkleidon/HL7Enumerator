@@ -8,7 +8,7 @@ namespace HL7Enumerator.Types
     {
         public class XTN_ExtendedTelecommunicationNumber : HL7TypeBase, IHL7Type
         {
-            public TN_TelephoneNumber TelephoneNumber { get; set; }
+            public TN_TelephoneNumber TelephoneNumber { get; set; } = "";
             public ID_CodedValue TelecommunicationUseCode { get; set; }
             public ID_CodedValue TelecommunicationEquipment { get; set; }
             public string EmailAddress { get; set; }
@@ -42,9 +42,9 @@ namespace HL7Enumerator.Types
             public virtual string ToString(char separator)
             {
                 return
-                    $"{(string)TelephoneNumber}{separator}{TelecommunicationUseCode.BestValue}"+
-                    $"{separator}{TelecommunicationEquipment.BestValue}" +
-                    $"{separator}{EmailAddress}";
+                    $"{(string)TelephoneNumber}{separator}{TelecommunicationUseCode?.BestValue}"+
+                    $"{separator}{TelecommunicationEquipment?.BestValue}" +
+                    $"{separator}{EmailAddress}".TrimEnd(separator);
             }
         }
 

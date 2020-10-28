@@ -60,7 +60,8 @@ namespace HL7Enumerator.Types
                     $"{FamilyName}{separator}{GivenName}{separator}{SecondGivenNamesOrInitials}" +
                     $"{separator}{Suffix}{separator}{Prefix}{separator}{Degree.BestValue}{separator}" +
                     $"{NameTypeCode.BestValue}{separator}{NameRepresentationCode.BestValue}{separator}"+
-                    $"{NameContext.ToString(ns)}{separator}{NameAssemblyOrder.BestValue}";
+                    $"{NameContext?.ToString(ns)}{separator}{NameAssemblyOrder?.BestValue}"
+                    .TrimEnd(separator);
             }
         }
 

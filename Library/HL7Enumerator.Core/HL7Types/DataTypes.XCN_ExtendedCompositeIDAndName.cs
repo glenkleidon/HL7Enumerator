@@ -73,11 +73,12 @@ namespace HL7Enumerator.Types
                 return
                     $"{ID}{separator}{FamilyName}{separator}{GivenName}{separator}{SecondGivenNamesOrInitials}" +
                     $"{separator}{Suffix}{separator}{Prefix}{separator}{Degree}{separator}" +
-                    $"{SourceTable}{separator}{AssigningAuthority.ToString(ns)}{separator}" +
+                    $"{SourceTable}{separator}{AssigningAuthority?.ToString(ns)}{separator}" +
                     $"{NameTypeCode}{separator}{IdentifierCheckDigit}{separator}{CheckDigitScheme}{separator}" +
-                    $"{IdentifierTypeCode}{separator}{AssigningFacility.ToString(ns)}{separator}" +
-                    $"{NameRepresentationCode}{separator}{NameContext.ToString(ns)}{separator}" +
-                    $"{NameValidityRange.ToString(ns)}{separator}{NameAssemblyOrder}";
+                    $"{IdentifierTypeCode}{separator}{AssigningFacility?.ToString(ns)}{separator}" +
+                    $"{NameRepresentationCode}{separator}{NameContext?.ToString(ns)}{separator}" +
+                    $"{NameValidityRange?.ToString(ns)}{separator}{NameAssemblyOrder}"
+                    .TrimEnd(separator);
             }
         }
 

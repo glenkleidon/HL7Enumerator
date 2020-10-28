@@ -47,8 +47,8 @@ namespace HL7Enumerator.Types
             }
             public string ToString(char separator)
             {
-                return $"{SourceApplication.ToString()}{separator}{TypeOfData.BestValue}{separator}" +
-                    $"{DataSubType.BestValue}{separator}{Encoding.BestValue}{separator}{Data}";
+                return $"{SourceApplication?.ToString()}{separator}{TypeOfData?.BestValue}{separator}" +
+                    $"{DataSubType?.BestValue}{separator}{Encoding?.BestValue}{separator}{Data}".TrimEnd(separator);
             }
         }
 
