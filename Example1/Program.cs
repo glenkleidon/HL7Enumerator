@@ -15,7 +15,7 @@ namespace Example1
         {
             
             var msgText = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
-              @"PID|||001677980~212323112^^^TESTING^MR^AUTH||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|" + "\r" +
+              @"PID|||001677980~212323112^^^AUTH^MR^TESTING||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|" + "\r" +
               @"PD1||||1234567890^LAST^FIRST^M^^^^^NPI|" + "\r" +
               @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|" + "\r" +
               @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|" + "\r" +
@@ -46,9 +46,10 @@ namespace Example1
                 Console.WriteLine("\r\nFound Tests:");
                 foreach (string obx in OBXTestNames) Console.WriteLine(string.Format("  {0}", obx));
 
-                //Extracting All IDs as 
+                //Extracting All IDs as Low Level Elements
                 Console.WriteLine("\r\nExtract Ids: (PID-3[])");
                 var ids = mesg.Element("PID.3[]");
+                Console.WriteLine($" Found {ids.Count} Ids Using Elements (low level)");
                 foreach (var id in ids)
                 {
                     if (id.Count > 0)
@@ -62,13 +63,21 @@ namespace Example1
                     if (id.Count > 4) Console.WriteLine($"  IDType:{id[4]}");
                     if (id.Count > 3) Console.WriteLine($"  Issuer:{id[3]}");
                 }
-                //
+                // Using a Data Type to extract the element
+                var patientIds = ids.AsCXs();
+                Console.WriteLine($"Found {patientIds?.Count()} Ids using DataType Assigment");
+                foreach (var cx in patientIds)
+                {
+                    Console.WriteLine($"ID:       {cx?.ID}");
+                    Console.WriteLine($"  IDType:   {cx?.IdentifierTypeCode}");
+                    Console.WriteLine($"  Authority:{cx?.AssigningAuthority?.NamespaceId?.BestValue}");
+                    Console.WriteLine($"  Facility: {cx?.AssigningFacility?.NamespaceId?.BestValue}");
+                }
 
 
 
-                //Compose a Segment - create extension methods to this more cleanly
-                // create "PID1||||1234567890^LAST^FIRST^M^^^^^NPI|
-
+                // Compose a Segment
+                // Composed PID: PID||1234567^4^M11^ADT01^MR^University Hospital|1234567^4^M11^ADT01^MR^University Hospital~8003608833357361^^^AUSHIC^NI^
                 var patientIdentifiers = new List<CX_CompositeId>()
                 {
                     new CX_CompositeId()

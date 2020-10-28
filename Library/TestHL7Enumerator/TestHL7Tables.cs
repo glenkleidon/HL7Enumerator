@@ -63,7 +63,6 @@ namespace TestHL7Enumerator
         [Fact]
         public void ShouldReturnNullForFaultType()
         {
-            //we need 5 altogether, but we dont have those defined, so we dont want to repeat.
             var tbleIds = new List<String>() { "0399", "0190", null, null, null };
 
             HL7Message mesg = test1;
