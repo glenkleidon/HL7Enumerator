@@ -13,26 +13,14 @@ namespace HL7Enumerator.Types
             {
 
             }
-            public ID_CodedValue(string value, string tableId)
-            {
-                this.tableId = tableId;
-                this.Value = value;
-                this.table = DataTables.GetCodeTable(tableId);
+            public ID_CodedValue(string value, string tableId, IDataTableProvider tables=null) : base(value, tableId, tables)
+            { 
             }
-            public ID_CodedValue(Dictionary<string, string> table, string tableId = null)
+            public ID_CodedValue(Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null) : base(table, tableId, tables)
             {
-                this.table = table;
-                this.tableId = tableId;
-                LinkTable();
-                if (table == null) this.table = DataTables.GetCodeTable(tableId);
             }
-            public ID_CodedValue(string value, Dictionary<string, string> table, string tableId = null)
+            public ID_CodedValue(string value, Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null): base(value, table, tableId, tables)
             {
-                this.table = table;
-                this.tableId = tableId;
-                LinkTable();
-                if (table == null) this.table = DataTables.GetCodeTable(tableId);
-                Value = value;
             }
         }
     }

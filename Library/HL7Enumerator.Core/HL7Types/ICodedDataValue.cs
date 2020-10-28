@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using HL7Enumerator.HL7Tables;
+using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
 {
@@ -11,5 +12,6 @@ namespace HL7Enumerator.Types
         string BestValue { get; }
         string TableId { get; set; }
         Dictionary<string, string> Table { get; set; }
+        IDataTableProvider TableProvider { get; set; }
       }
 }

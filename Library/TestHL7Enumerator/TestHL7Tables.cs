@@ -10,6 +10,7 @@ namespace TestHL7Enumerator
 {
     public class TestHL7Tables
     {
+        IDataTableProvider tables = new InMemoryDataTableProvider();
         private const string testSeg = "TTT|1|";
         private const string addr1 = @"119 SMITH STREET^^SWANSEE^NSW^2281^AUS^H^^^^^20140430121110+1000&20200131121008+1100";
         private const string addr2 = @"27 MANN AVENUE^^PATTERSON LAKES^NSW^3197^AUS^H^^^^^20150530121110+1000";
@@ -32,8 +33,9 @@ namespace TestHL7Enumerator
             country0399.Add("PCN", "Pitcairn");
             country0399.Add("PNG", "Papua New Guinea");
 
-            DataTables.AddUpdateCodeTable("0190", addrTypes0190);
-            DataTables.AddUpdateCodeTable("0399", country0399);
+
+            tables.AddCodeTable("0190", addrTypes0190);
+            tables.AddCodeTable("0399", country0399);
         }
         public TestHL7Tables()
         {

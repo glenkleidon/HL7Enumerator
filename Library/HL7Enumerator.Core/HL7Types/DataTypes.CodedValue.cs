@@ -11,22 +11,35 @@ namespace HL7Enumerator.Types
 
             protected string tableId;
             protected Dictionary<string, string> table;
+            private IDataTableProvider tableProvider;
+
             public CodedDataValue()
             {
             }
-            public CodedDataValue(string tableId)
+
+            public CodedDataValue(string value, string tableId, IDataTableProvider tables=null)
             {
+                this.tableProvider = tables;
                 this.tableId = tableId;
-                this.table = DataTables.GetCodeTable(tableId);
+                this.Value = value;
+                this.table = TableProvider.GetCodeTable(tableId);
             }
-            public CodedDataValue(Dictionary<string, string> table, string tableId = null)
+            public CodedDataValue(string tableId, IDataTableProvider tables = null)
             {
+                this.tableProvider = tables;
+                this.tableId = tableId;
+                this.table = TableProvider.GetCodeTable(tableId);
+            }
+            public CodedDataValue(Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null)
+            {
+                this.tableProvider = tables;
                 this.table = table;
                 this.tableId = tableId;
                 LinkTable();
             }
-            public CodedDataValue(string value, Dictionary<string, string> table, string tableId = null)
+            public CodedDataValue(string value, Dictionary<string, string> table, string tableId = null, IDataTableProvider tables = null)
             {
+                this.tableProvider = tables;
                 this.table = table;
                 this.tableId = tableId;
                 LinkTable();
@@ -35,9 +48,9 @@ namespace HL7Enumerator.Types
 
             protected void LinkTable()
             {
-                if (table == null) this.table = DataTables.GetCodeTable(tableId);
+                if (table == null) this.table = TableProvider.GetCodeTable(tableId);
                 if (!string.IsNullOrWhiteSpace(tableId) && table != null)
-                    DataTables.AddUpdateCodeTable(tableId, table);
+                    TableProvider.AddCodeTable(tableId, table);
             }
             public string Value { get; set; }
             public string CodedValue
@@ -82,6 +95,17 @@ namespace HL7Enumerator.Types
                     table = value;
                     LinkTable();
                 } 
+            }
+
+            public IDataTableProvider TableProvider {
+                get
+                {
+                    if (tableProvider == null) tableProvider = new InMemoryDataTableProvider();
+                    return tableProvider;
+                }
+
+                set => tableProvider = value;
+                   
             }
 
             public override string ToString()
