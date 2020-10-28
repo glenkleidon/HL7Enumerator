@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class XON_ExtendedCompositeNameForOrganizations : IHL7Type
+        public class XON_ExtendedCompositeNameForOrganizations : HL7TypeBase, IHL7Type
         {   
             public string OrganizationName { get; set; }
             public IS_CodedValue OrganizationNameTypeCode { get; set; }
@@ -16,28 +18,32 @@ namespace HL7Enumerator.Types
             public IS_CodedValue IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
 
-            public int TablesRequired => 3 + (2 * new HD_HierarchicDesignator().TablesRequired); // 2 Hds, 2 ISs and 1 Id;
+            public static int TablesRequired => 3 + (2 * HD_HierarchicDesignator.TablesRequired); // 2 Hds, 2 ISs and 1 Id;
+
+            public int DataTablesRequired => TablesRequired;
+
             public XON_ExtendedCompositeNameForOrganizations()
             {
 
             }
-            public XON_ExtendedCompositeNameForOrganizations(HL7Element element, IEnumerable<string> tableIds = null)
+            public XON_ExtendedCompositeNameForOrganizations(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
+                 : base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
+
             }
 
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 var tblsUsed = 0;
                 OrganizationName = element.ElementValue(0);
-                OrganizationNameTypeCode = new IS_CodedValue(element.ElementValue(1), NextTableId(tableIds, ref tblsUsed));
+                OrganizationNameTypeCode = NewIS(element.ElementValue(1), NextTableId(tableIds, ref tblsUsed));
                 ID = element.IndexedElement(2);
                 CheckDigit = element.ElementValue(3);
-                CheckDigitScheme = new ID_CodedValue(element.ElementValue(4), NextTableId(tableIds, ref tblsUsed));
-                AssigningAuthority = element.AsHD(5, tableIds?.Skip(tblsUsed));
-                tblsUsed += new HD_HierarchicDesignator().TablesRequired;
-                IdentifierTypeCode = new IS_CodedValue(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
-                AssigningFacility = element.AsHD(7, tableIds); 
+                CheckDigitScheme = NewID(element.ElementValue(4), NextTableId(tableIds, ref tblsUsed));
+                AssigningAuthority = element.AsHD(5, tableIds?.Skip(tblsUsed), Tables);
+                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                IdentifierTypeCode = NewIS(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
+                AssigningFacility = element.AsHD(7, tableIds, Tables); 
             }
 
             public override string ToString()

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,28 +8,28 @@ namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class CX_CompositeId : IHL7Type
+        public class CX_CompositeId : HL7TypeBase, IHL7Type
         {
             public CX_CompositeId()
             {
 
             }
-            public CX_CompositeId(HL7Element element, IEnumerable<string> tableIds = null)
+            public CX_CompositeId(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables=null)
+                : base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
             }
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 var tblsUsed = 0;
                 ID = element.ElementValue(0);
                 CheckDigit = element.ElementValue(1);
-                CheckDigitScheme = new ID_CodedValue(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
-                AssigningAuthority = element.AsHD(3, tableIds?.Skip(tblsUsed));
-                if (AssigningAuthority != null) tblsUsed += AssigningAuthority.TablesRequired;
+                CheckDigitScheme = NewID(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
+                AssigningAuthority = element.AsHD(3, tableIds?.Skip(tblsUsed), Tables);
+                tblsUsed += HD_HierarchicDesignator.TablesRequired;
 
                 IdentifierTypeCode = element.ElementValue(4);
-                AssigningFacility = element.AsHD(5, tableIds?.Skip(tblsUsed));
-                if (AssigningFacility!=null) tblsUsed += AssigningFacility.TablesRequired;
+                AssigningFacility = element.AsHD(5, tableIds?.Skip(tblsUsed), Tables);
+                tblsUsed += HD_HierarchicDesignator.TablesRequired;
 
                 EffectiveDate = element.FromTS(6);
                 ExpirationDate = element.FromTS(7);
@@ -42,7 +44,9 @@ namespace HL7Enumerator.Types
             public DateTime? EffectiveDate { get; set; }
             public DateTime? ExpirationDate { get; set; }
 
-            public int TablesRequired => 1 + (2 * new HD_HierarchicDesignator().TablesRequired); //2Hds and 1 ID
+            public static int TablesRequired => 1 + (2 * HD_HierarchicDesignator.TablesRequired); //2Hds and 1 ID
+
+            public int DataTablesRequired => TablesRequired;
 
             public override string ToString()
             {

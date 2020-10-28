@@ -3,7 +3,7 @@ using Xunit;
 
 namespace TestHL7Enumerator
 {
-    
+
     public class TestSearchCriteria
     {
         [Fact]

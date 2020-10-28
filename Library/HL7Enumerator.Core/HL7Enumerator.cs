@@ -1,8 +1,8 @@
-﻿using System;
+﻿using HL7Enumerator.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using HL7Enumerator.Extensions;
 
 namespace HL7Enumerator
 {

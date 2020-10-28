@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static HL7Enumerator.Types.DataTypes;
 
 namespace HL7Enumerator.Extensions
 {

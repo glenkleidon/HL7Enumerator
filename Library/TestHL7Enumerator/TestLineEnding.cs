@@ -1,7 +1,4 @@
 ﻿using HL7Enumerator;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace TestHL7Enumerator

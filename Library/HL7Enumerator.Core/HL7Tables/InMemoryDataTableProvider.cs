@@ -1,7 +1,7 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text;
 
 namespace HL7Enumerator.HL7Tables
 {

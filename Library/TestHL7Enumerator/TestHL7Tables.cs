@@ -1,10 +1,10 @@
 ﻿using HL7Enumerator;
+using HL7Enumerator.HL7Tables;
+using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
-using HL7Enumerator.HL7Tables;
-using HL7Enumerator.Types;
 
 namespace TestHL7Enumerator
 {
@@ -49,7 +49,7 @@ namespace TestHL7Enumerator
             var tbleIds = new List<String>() { "0399","0190", null,null,null };
 
             HL7Message mesg = test1; 
-            var address = mesg.Element("TTT[1].2").AsXAD(tbleIds);
+            var address = mesg.Element("TTT[1].2").AsXAD(tbleIds, tables);
             Assert.Equal("0399",address.Country.TableId);
             Assert.Equal("0190", address.AddressType.TableId);
             Assert.Equal("H", address.AddressType.CodedValue);
@@ -67,8 +67,8 @@ namespace TestHL7Enumerator
             var tbleIds = new List<String>() { "0399", "0190", null, null, null };
 
             HL7Message mesg = test1;
-            var address = mesg.Element("TTT[1].2").AsXAD(tbleIds);
-            // force value to be wong.
+            var address = mesg.Element("TTT[1].2").AsXAD(tbleIds, tables);
+            // force value to be wrong.
             address.AddressType.Value = "Q";
             address.Country.Value = "ZZZ";
             Assert.Equal("0399", address.Country.TableId);

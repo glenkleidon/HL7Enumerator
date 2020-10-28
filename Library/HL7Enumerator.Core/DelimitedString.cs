@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HL7Enumerator
+﻿namespace HL7Enumerator
 {
     public class DelimitedString
     {

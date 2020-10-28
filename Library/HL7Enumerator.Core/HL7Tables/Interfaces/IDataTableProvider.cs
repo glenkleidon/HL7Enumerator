@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
-namespace HL7Enumerator.HL7Tables
+namespace HL7Enumerator.HL7Tables.Interfaces
 {
     public interface IDataTableProvider
     {

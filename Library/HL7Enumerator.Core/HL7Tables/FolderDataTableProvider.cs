@@ -1,4 +1,4 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;

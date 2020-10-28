@@ -1,7 +1,6 @@
 ﻿using HL7Enumerator;
 using HL7Enumerator.Types;
 using System;
-using System.Globalization;
 using System.Linq;
 using Xunit;
 

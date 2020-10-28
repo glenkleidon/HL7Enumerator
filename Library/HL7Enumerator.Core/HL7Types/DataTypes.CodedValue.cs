@@ -1,6 +1,7 @@
 ﻿using HL7Enumerator.HL7Tables;
+using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HL7Enumerator.Types
 {
@@ -107,6 +108,7 @@ namespace HL7Enumerator.Types
                 set => tableProvider = value;
                    
             }
+           
 
             public override string ToString()
             {

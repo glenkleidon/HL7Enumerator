@@ -1,7 +1,7 @@
-﻿using HL7Enumerator.HL7Tables;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
 using System.Collections.Generic;
 
-namespace HL7Enumerator.Types
+namespace HL7Enumerator.Types.Interfaces
 {
     public interface ICodedDataValue
     {

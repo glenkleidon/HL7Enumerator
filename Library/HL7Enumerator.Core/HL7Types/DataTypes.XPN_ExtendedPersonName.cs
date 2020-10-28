@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
+using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class XPN_ExtendedPersonName : IHL7Type
+        public class XPN_ExtendedPersonName : HL7TypeBase, IHL7Type
         {
             public string FamilyName { get; set; }
             public string GivenName { get; set; }
@@ -17,17 +19,20 @@ namespace HL7Enumerator.Types
             public CE_CodedElement NameContext { get; set; }
             public ID_CodedValue NameAssemblyOrder { get; set; }
 
-            public int TablesRequired => (2 * new CE_CodedElement().TablesRequired) + 4;
+            public static int TablesRequired => (2 * CE_CodedElement.TablesRequired) + 4;
+
+            public virtual int DataTablesRequired => TablesRequired;
+
             public XPN_ExtendedPersonName()
             {
 
             }
-            public XPN_ExtendedPersonName(HL7Element element, IEnumerable<string> tableIds = null)
+            public XPN_ExtendedPersonName(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables =null)
+                :base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
             }
 
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 var tblsUsed = 0;
 
@@ -36,12 +41,12 @@ namespace HL7Enumerator.Types
                 SecondGivenNamesOrInitials = element.ElementValue(2);
                 Suffix = element.ElementValue(3);
                 Prefix = element.ElementValue(4);
-                Degree = new IS_CodedValue(element.IndexedElement(5), NextTableId(tableIds, ref tblsUsed));
-                NameTypeCode = new ID_CodedValue(element.IndexedElement(6), NextTableId(tableIds, ref tblsUsed));
-                NameRepresentationCode = new ID_CodedValue(element.IndexedElement(7), NextTableId(tableIds, ref tblsUsed));
-                NameContext = element.IndexedElement(8).AsCE(tableIds);
-                tblsUsed += (new CE_CodedElement().TablesRequired);
-                NameAssemblyOrder = new ID_CodedValue(element.IndexedElement(9), NextTableId(tableIds, ref tblsUsed));
+                Degree = NewIS(element.IndexedElement(5), NextTableId(tableIds, ref tblsUsed));
+                NameTypeCode = NewID(element.IndexedElement(6), NextTableId(tableIds, ref tblsUsed));
+                NameRepresentationCode = NewID(element.IndexedElement(7), NextTableId(tableIds, ref tblsUsed));
+                NameContext = element.IndexedElement(8).AsCE(tableIds, Tables);
+                tblsUsed += CE_CodedElement.TablesRequired;
+                NameAssemblyOrder = NewID(element.IndexedElement(9), NextTableId(tableIds, ref tblsUsed));
             }
 
             public override string ToString()

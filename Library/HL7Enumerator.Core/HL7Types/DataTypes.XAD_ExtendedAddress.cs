@@ -1,11 +1,12 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
 using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class XAD_ExtendedAddress : IHL7Type
+        public class XAD_ExtendedAddress : HL7TypeBase, IHL7Type
         {
 
             public SAD_StreetAddress StreetAddress { get; set; }
@@ -21,17 +22,20 @@ namespace HL7Enumerator.Types
             public ID_CodedValue AddressRepresentationCode { get; set; }
             public DR_DateRange AddressValidityRange { get; set; }
 
-            public int TablesRequired => 5;// 3 Ids and 2 ISs;
+            public static int TablesRequired => 5;// 3 Ids and 2 ISs;
+
+            public int DataTablesRequired => TablesRequired;
+
             public XAD_ExtendedAddress()
             {
 
             }
-            public XAD_ExtendedAddress(HL7Element element, IEnumerable<string> tableIds = null)
+            public XAD_ExtendedAddress(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
+                : base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
             }
 
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 var tblsUsed = 0;
                 StreetAddress = new SAD_StreetAddress(element.IndexedElement(0));
@@ -39,12 +43,12 @@ namespace HL7Enumerator.Types
                 City = element.ElementValue(2);
                 StateOrProvince = element.ElementValue(3);
                 ZipOrPostalCode = element.ElementValue(4);
-                Country = new ID_CodedValue(element.ElementValue(5), NextTableId(tableIds, ref tblsUsed));
-                AddressType = new ID_CodedValue(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
+                Country = NewID(element.ElementValue(5), NextTableId(tableIds, ref tblsUsed));
+                AddressType = NewID(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
                 OtherGeographicDesignation = element.ElementValue(7);
-                CountyOrParishCode = new IS_CodedValue(element.ElementValue(8), NextTableId(tableIds, ref tblsUsed));
-                CensusTract = new IS_CodedValue(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
-                AddressRepresentationCode = new ID_CodedValue(element.ElementValue(10), NextTableId(tableIds, ref tblsUsed));
+                CountyOrParishCode = NewIS(element.ElementValue(8), NextTableId(tableIds, ref tblsUsed));
+                CensusTract = NewIS(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
+                AddressRepresentationCode = NewID(element.ElementValue(10), NextTableId(tableIds, ref tblsUsed));
                 AddressValidityRange = element.AsDateRange(11);
             }
 

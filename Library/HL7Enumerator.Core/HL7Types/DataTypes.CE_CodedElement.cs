@@ -1,10 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
+using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
     {
-        public class CE_CodedElement : IHL7Type
+        public class CE_CodedElement : HL7TypeBase, IHL7Type
         {
 
             public CE_CodedElement()
@@ -20,25 +22,26 @@ namespace HL7Enumerator.Types
             /// <param name="tableIds">The list of required table names For IS and ID data types
             /// in the order they appear in the element. If All values use the same Table, it may 
             /// be added once.</param>
-            public CE_CodedElement(HL7Element element, IEnumerable<string> tableIds = null)
+            public CE_CodedElement(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
+                : base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
             }
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 var tablesUsed = 0;
                 Identifier = element.ElementValue(0);
 
                 Text = element.ElementValue(1);
 
-                NameOfCodingSystem = new IS_CodedValue(
+                NameOfCodingSystem = NewIS(
                     element.ElementValue(2), NextTableId(tableIds, ref tablesUsed));
 
                 AlternateIdentifier = element.ElementValue(3);
 
                 AlternateText = element.ElementValue(4);
 
-                NameOfAlternateCodingSystem = new IS_CodedValue(
+                NameOfAlternateCodingSystem = NewIS(
                     element.ElementValue(5), NextTableId(tableIds, ref tablesUsed));
 
             }
@@ -50,7 +53,11 @@ namespace HL7Enumerator.Types
             public string AlternateText { get; set; }
             public IS_CodedValue NameOfAlternateCodingSystem { get; set; }
 
-            public int TablesRequired => 2; // two ISs.
+            public static int TablesRequired => 2; // two ISs.
+
+            public int DataTablesRequired => TablesRequired;
+
+            IDataTableProvider IHL7Type.Tables { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 
             public override string ToString()
             {

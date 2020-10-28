@@ -1,10 +1,10 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using HL7Enumerator.Types.Interfaces;
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using HL7Enumerator;
+
 namespace HL7Enumerator.Types
 {
     public static partial class DataTypes
@@ -172,15 +172,15 @@ namespace HL7Enumerator.Types
         /// <param name="element">Element representing or containing the HD Data</param>
         /// <param name="index">Optionally the sub element </param>
         /// <returns>A fully populated HL7 HD object</returns>
-        public static HD_HierarchicDesignator AsHD(this HL7Element element, int index = -1, IEnumerable<string> tableIds = null)
+        public static HD_HierarchicDesignator AsHD(this HL7Element element, int index = -1, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
             var el = element.IndexedElement(index);
             if (el == null) return null;
-            return new HD_HierarchicDesignator(el, tableIds);
+            return new HD_HierarchicDesignator(el, tableIds, tables);
         }
-        public static HD_HierarchicDesignator AsHD(this HL7Element element, IEnumerable<string> tableIds = null)
+        public static HD_HierarchicDesignator AsHD(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables =null)
         {
-            return new HD_HierarchicDesignator(element, tableIds);
+            return new HD_HierarchicDesignator(element, tableIds, tables);
         }
         /// <summary>
         /// Safely Extract a Date Range from the Supplied element assuming suitable contents;
@@ -253,6 +253,12 @@ namespace HL7Enumerator.Types
         {
             string value = element.ElementValue(index);
             return new CodedDataValue(value, table, tableId);
+        }
+        public static ICodedDataValue AsCodedValue(this HL7Element element, int index = -1, string tableId = "",
+              IDataTableProvider tables=null)
+        {
+            string value = element.ElementValue(index);
+            return new CodedDataValue(value, tableId, tables);
         }
         /// <summary>
         /// Safely return a DataTime from a HL7 Timestamp. NOTE: It is not usually necessary
@@ -472,20 +478,20 @@ namespace HL7Enumerator.Types
         /// </summary>
         /// <param name="element"></param>
         /// <returns>A HL7 CX object</returns>
-        public static CX_CompositeId AsCX(this HL7Element element)
+        public static CX_CompositeId AsCX(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
-            return new CX_CompositeId(element);
+            return new CX_CompositeId(element,tableIds, tables);
         }
-        public static IEnumerable<CX_CompositeId> AsCXs(this HL7Element element)
+        public static IEnumerable<CX_CompositeId> AsCXs(this HL7Element element, IEnumerable<string> tableIds=null, IDataTableProvider tables=null)
         {
             var cxs = new List<CX_CompositeId>();
             if (element.IsRepeatingField)
             {
-                cxs.AddRange(element.Select(e => new CX_CompositeId(e)));
+                cxs.AddRange(element.Select(e => new CX_CompositeId(e, tableIds, tables)));
             }
             else
             {
-                cxs.Add(new CX_CompositeId(element));
+                cxs.Add(new CX_CompositeId(element, tableIds, tables));
             }
             return cxs;
         }
@@ -496,34 +502,34 @@ namespace HL7Enumerator.Types
         /// </summary>
         /// <param name="element"></param>
         /// <returns>a HL7 ED object</returns>
-        public static ED_EncapsulatedData AsED(this HL7Element element)
+        public static ED_EncapsulatedData AsED(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
-            return new ED_EncapsulatedData(element);
+            return new ED_EncapsulatedData(element, tableIds, tables);
         }
         /// <summary>
         /// Safely Extract a HL7 XCN (Extended Composite ID and Name) from a HL7 Element Assuming suitable conent
         /// </summary>
         /// <param name="element"></param>
         /// <returns>A HL7 XCN Object</returns>
-        public static XCN_ExtendedCompositeIDAndName AsXCN(this HL7Element element)
+        public static XCN_ExtendedCompositeIDAndName AsXCN(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
-            return new XCN_ExtendedCompositeIDAndName(element);
+            return new XCN_ExtendedCompositeIDAndName(element, tableIds, tables);
         }
         /// <summary>
         /// Safely Extract all HL7 XCN (Extended Composite ID and Name) from a HL7 Element assuming suitable content
         /// </summary>
         /// <param name="element"></param>
         /// <returns>An IEnumerable of HL7 XCN Objects</returns>
-        public static IEnumerable<XCN_ExtendedCompositeIDAndName> AsXCNs(this HL7Element element)
+        public static IEnumerable<XCN_ExtendedCompositeIDAndName> AsXCNs(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
             var xcns = new List<XCN_ExtendedCompositeIDAndName>();
             if (element.IsRepeatingField)
             {
-                xcns.AddRange(element.Select(e => new XCN_ExtendedCompositeIDAndName(e)));
+                xcns.AddRange(element.Select(e => new XCN_ExtendedCompositeIDAndName(e, tableIds, tables)));
             }
             else
             {
-                xcns.Add(new XCN_ExtendedCompositeIDAndName(element));
+                xcns.Add(new XCN_ExtendedCompositeIDAndName(element, tableIds, tables));
             }
             return xcns;
         }
@@ -532,9 +538,9 @@ namespace HL7Enumerator.Types
         /// </summary>
         /// <param name="element"></param>
         /// <returns>a HL7 CE object</returns>
-        public static CE_CodedElement AsCE(this HL7Element element, IEnumerable<string> tableIds = null)
+        public static CE_CodedElement AsCE(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables=null)
         {
-            return new CE_CodedElement(element, tableIds);
+            return new CE_CodedElement(element, tableIds, tables);
 
         }
         /// <summary>
@@ -543,39 +549,39 @@ namespace HL7Enumerator.Types
         /// <param name="element"></param>
         /// <returns>an IEnumerable of HL7 CE objects</returns>
 
-        public static IEnumerable<CE_CodedElement> AsCEs(this HL7Element element, IEnumerable<string> tableIds = null)
+        public static IEnumerable<CE_CodedElement> AsCEs(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables=null)
         {
             var ces = new List<CE_CodedElement>();
             if (element.IsRepeatingField)
             {
-                ces.AddRange(element.Select(e => new CE_CodedElement(e, tableIds)));
+                ces.AddRange(element.Select(e => new CE_CodedElement(e, tableIds, tables)));
             }
             else
             {
-                ces.Add(new CE_CodedElement(element, tableIds));
+                ces.Add(new CE_CodedElement(element, tableIds, tables));
             }
             return ces;
         }
-        public static XAD_ExtendedAddress AsXAD(this HL7Element element, IEnumerable<string> tableIds = null)
+        public static XAD_ExtendedAddress AsXAD(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
-            return new XAD_ExtendedAddress(element, tableIds);
+            return new XAD_ExtendedAddress(element, tableIds, tables);
         }
 
-        public static IEnumerable<XAD_ExtendedAddress> AsXADs(this HL7Element element, IEnumerable<string> tableIds = null)
+        public static IEnumerable<XAD_ExtendedAddress> AsXADs(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
         {
             var xads = new List<XAD_ExtendedAddress>();
             if (element.IsRepeatingField)
             {
-                xads.AddRange(element.Select(e => new XAD_ExtendedAddress(e, tableIds)));
+                xads.AddRange(element.Select(e => new XAD_ExtendedAddress(e, tableIds, tables)));
             }
             else
             {
-                xads.Add(new XAD_ExtendedAddress(element, tableIds));
+                xads.Add(new XAD_ExtendedAddress(element, tableIds, tables));
             }
             return xads;
         }
 
-        public static string NextTableId(IEnumerable<string> tableIds, ref int index)
+        internal static string NextTableId(IEnumerable<string> tableIds, ref int index)
         {
             if (tableIds == null) return null;
             // I am matching first to avoid enumerating it all if not needed.

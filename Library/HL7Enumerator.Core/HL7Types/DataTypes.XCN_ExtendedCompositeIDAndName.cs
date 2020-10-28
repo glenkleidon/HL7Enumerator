@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
+using System;
 using System.Collections.Generic;
 
 namespace HL7Enumerator.Types
@@ -8,7 +9,7 @@ namespace HL7Enumerator.Types
 
         public class XCN_ExtendedCompositeIDAndName : XPN_ExtendedPersonName
         {
-            public void Populate(HL7Element element, IEnumerable<string> tableIds = null)
+            public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
             {
                 if (element.IsRepeatingField)
                 {
@@ -24,25 +25,26 @@ namespace HL7Enumerator.Types
                 Prefix = element.ElementValue(5);
 
                 var tblsUsed = 0;
-                Degree = new IS_CodedValue(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
+                Degree = NewIS(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
 
                 SourceTable = element.ElementValue(7);
-                AssigningAuthority = element.IndexedElement(8).AsHD(tableIds);
-                var hdTbls = new HD_HierarchicDesignator().TablesRequired;
-                tblsUsed += hdTbls;
+                AssigningAuthority = element.IndexedElement(8).AsHD(tableIds, Tables);
+                tblsUsed += HD_HierarchicDesignator.TablesRequired; ;
 
-                NameTypeCode = new ID_CodedValue(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
+                NameTypeCode = NewID(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
                 IdentifierCheckDigit = element.ElementValue(10);
                 CheckDigitScheme = element.ElementValue(11);
                 IdentifierTypeCode = element.ElementValue(12);
-                AssigningFacility = element.IndexedElement(13).AsHD(tableIds);
-                tblsUsed += hdTbls;
-                NameRepresentationCode = new ID_CodedValue(element.ElementValue(14),
+                
+                AssigningFacility = element.IndexedElement(13).AsHD(tableIds, Tables);
+                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                
+                NameRepresentationCode = NewID(element.ElementValue(14),
                     NextTableId(tableIds, ref tblsUsed));
                 NameContext = element.IndexedElement(15).AsCE();
 
                 NameValidityRange = element.IndexedElement(16).AsDateRange();
-                NameAssemblyOrder = new ID_CodedValue(element.ElementValue(17), NextTableId(tableIds, ref tblsUsed));
+                NameAssemblyOrder = NewID(element.ElementValue(17), NextTableId(tableIds, ref tblsUsed));
             }
 
             public XCN_ExtendedCompositeIDAndName()
@@ -50,9 +52,9 @@ namespace HL7Enumerator.Types
 
             }
 
-            public XCN_ExtendedCompositeIDAndName(HL7Element element, IEnumerable<string> tableIds = null)
+            public XCN_ExtendedCompositeIDAndName(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables=null)
+                : base(element, tableIds, tables)
             {
-                Populate(element, tableIds);
             }
             public string ID { get; set; }
             public string SourceTable { get; set; }
@@ -62,7 +64,8 @@ namespace HL7Enumerator.Types
             public string IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
             public DR_DateRange NameValidityRange { get; set; }
-            public int TablesUsed => (2 * new HD_HierarchicDesignator().TablesRequired);
+            public new static int TablesRequired => (XPN_ExtendedPersonName.TablesRequired + 2 * HD_HierarchicDesignator.TablesRequired);
+            public override int DataTablesRequired => TablesRequired;
 
             public override string ToString(char separator)
             {

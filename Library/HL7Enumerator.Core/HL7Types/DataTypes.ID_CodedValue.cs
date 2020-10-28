@@ -1,6 +1,5 @@
-﻿using HL7Enumerator.HL7Tables;
+﻿using HL7Enumerator.HL7Tables.Interfaces;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace HL7Enumerator.Types
 {
