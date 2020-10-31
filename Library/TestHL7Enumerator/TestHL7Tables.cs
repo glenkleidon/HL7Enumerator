@@ -33,7 +33,6 @@ namespace TestHL7Enumerator
             country0399.Add("PCN", "Pitcairn");
             country0399.Add("PNG", "Papua New Guinea");
 
-
             tables.AddCodeTable("0190", addrTypes0190);
             tables.AddCodeTable("0399", country0399);
         }
