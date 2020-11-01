@@ -29,7 +29,7 @@ namespace HL7Enumerator.Types
 
                 SourceTable = element.ElementValue(7);
                 AssigningAuthority = element.IndexedElement(8).AsHD(tableIds, Tables);
-                tblsUsed += HD_HierarchicDesignator.TablesRequired; ;
+                tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount; ;
 
                 NameTypeCode = NewID(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
                 IdentifierCheckDigit = element.ElementValue(10);
@@ -37,7 +37,7 @@ namespace HL7Enumerator.Types
                 IdentifierTypeCode = element.ElementValue(12);
                 
                 AssigningFacility = element.IndexedElement(13).AsHD(tableIds, Tables);
-                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount;
                 
                 NameRepresentationCode = NewID(element.ElementValue(14),
                     NextTableId(tableIds, ref tblsUsed));
@@ -64,8 +64,8 @@ namespace HL7Enumerator.Types
             public string IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
             public DR_DateRange NameValidityRange { get; set; }
-            public new static int TablesRequired => (XPN_ExtendedPersonName.TablesRequired + 2 * HD_HierarchicDesignator.TablesRequired);
-            public override int DataTablesRequired => TablesRequired;
+            public new static int TotalCodedFieldCount => (XPN_ExtendedPersonName.TotalCodedFieldCount + 2 * HD_HierarchicDesignator.TotalCodedFieldCount);
+            public override int DataTablesRequired => TotalCodedFieldCount;
 
             public override string ToString(char separator)
             {

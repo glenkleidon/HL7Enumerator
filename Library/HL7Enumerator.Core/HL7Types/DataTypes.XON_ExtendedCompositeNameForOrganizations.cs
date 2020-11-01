@@ -18,9 +18,9 @@ namespace HL7Enumerator.Types
             public IS_CodedValue IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
 
-            public static int TablesRequired => 3 + (2 * HD_HierarchicDesignator.TablesRequired); // 2 Hds, 2 ISs and 1 Id;
+            public static int TotalCodedFieldCount => 3 + (2 * HD_HierarchicDesignator.TotalCodedFieldCount); // 2 Hds, 2 ISs and 1 Id;
 
-            public int DataTablesRequired => TablesRequired;
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             public XON_ExtendedCompositeNameForOrganizations()
             {
@@ -41,7 +41,7 @@ namespace HL7Enumerator.Types
                 CheckDigit = element.ElementValue(3);
                 CheckDigitScheme = NewID(element.ElementValue(4), NextTableId(tableIds, ref tblsUsed));
                 AssigningAuthority = element.AsHD(5, tableIds?.Skip(tblsUsed), Tables);
-                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount;
                 IdentifierTypeCode = NewIS(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
                 AssigningFacility = element.AsHD(7, tableIds, Tables); 
             }

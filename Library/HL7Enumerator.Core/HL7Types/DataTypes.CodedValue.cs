@@ -1,7 +1,10 @@
 ﻿using HL7Enumerator.HL7Tables;
 using HL7Enumerator.HL7Tables.Interfaces;
+using static HL7Enumerator.Core.HL7Tables.Extensions;
 using HL7Enumerator.Types.Interfaces;
 using System.Collections.Generic;
+using System.Linq;
+using System;
 
 namespace HL7Enumerator.Types
 {
@@ -65,7 +68,7 @@ namespace HL7Enumerator.Types
             {
                 get
                 {
-                    return (CodedValue.Length > 0) ? table[CodedValue] : string.Empty;
+                    return Details?.ShortDescription;
                 }
             }
             public bool? IsValid
@@ -108,7 +111,17 @@ namespace HL7Enumerator.Types
                 set => tableProvider = value;
                    
             }
-           
+            private ITableDetails Details {
+                get => (CodedValue.Length > 0) ?  table?.TableDetails().First(d => d.Value.Equals(CodedValue)): null ;
+            }
+
+            public IEnumerable<string> Notes
+            {
+                get
+                {
+                    return Details?.Notes;
+                }
+            }
 
             public override string ToString()
             {

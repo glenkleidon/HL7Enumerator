@@ -1,0 +1,5 @@
+﻿AUSHIC=Medicare Australia	 
+AUSDVA=Dept of Veteran’s Affairs	 
+AUSNATA=National Association of Testing Authorities, Australia	 
+AUSLINK=Australian CentreLink	 
+AUSHICPR=Medicare Australia provider number	

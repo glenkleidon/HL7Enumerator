@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace HL7Enumerator.Types
 {
@@ -150,7 +151,10 @@ namespace HL7Enumerator.Types
         /// <returns>A HL7 element if it exists</returns>
         public static HL7Element IndexedElement(this HL7Element element, int index = -1)
         {
-            return (index == -1) ? element : (index < element.Count) ? element[index] : null;
+            
+            var el = (index == -1) ? element : (index < element.Count) ? element[index] : null;
+            return (el!=null && el.IsRepeatingField && element.Value == null && el.Count == 1) ? el[0] : el;
+
         }
         /// <summary>
         /// Safely return Value of the desired Element.  This relieves the need to check 
@@ -580,6 +584,24 @@ namespace HL7Enumerator.Types
             }
             return xads;
         }
+        public static XPN_ExtendedPersonName AsXPN(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
+        {
+            return new XPN_ExtendedPersonName(element, tableIds, tables);
+        }
+        public static IEnumerable<XPN_ExtendedPersonName> AsXPNs(this HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
+        {
+            var xpns = new List<XPN_ExtendedPersonName>();
+            if (element.IsRepeatingField)
+            {
+                xpns.AddRange(element.Select(e => new XPN_ExtendedPersonName(e, tableIds, tables)));
+            }
+            else
+            {
+               xpns.Add(new XPN_ExtendedPersonName(element, tableIds, tables));
+            };
+            return xpns;
+        }
+
 
         public static HL7Element AsElement(this IEnumerable<CX_CompositeId> cxs)
         {

@@ -23,13 +23,15 @@ namespace HL7Enumerator.Types
         }
         public IDataTableProvider Tables { get; set; }
 
-        protected ID_CodedValue NewID(string value, string tableId)
+        protected ID_CodedValue NewID(string value, string tableId, IDataTableProvider tables = null)
         {
-            return new ID_CodedValue(value, tableId, Tables);
+            if (tables == null) tables = Tables;
+            return new ID_CodedValue(value, tableId, tables);
         }
-        protected IS_CodedValue NewIS(string value, string tableId)
+        protected IS_CodedValue NewIS(string value, string tableId, IDataTableProvider tables=null)
         {
-            return new IS_CodedValue(value, tableId, Tables);
+            if (tables == null) tables = Tables;
+            return new IS_CodedValue(value, tableId, tables);
         }
 
     }

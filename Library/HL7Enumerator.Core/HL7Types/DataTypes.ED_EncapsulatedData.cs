@@ -24,7 +24,7 @@ namespace HL7Enumerator.Types
                 {
                     var tblsUsed = 0;
                     SourceApplication = element.AsHD(0, tableIds, Tables);
-                    tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                    tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount;
                     TypeOfData = NewID(element.ElementValue(1), NextTableId(tableIds, ref tblsUsed));
                     DataSubType = NewID(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
                     Encoding = NewID(element.ElementValue(3), NextTableId(tableIds, ref tblsUsed));
@@ -37,9 +37,9 @@ namespace HL7Enumerator.Types
             public ID_CodedValue Encoding;
             public string Data;
 
-            public static int TablesRequired => 3 + (HD_HierarchicDesignator.TablesRequired); // 1 HD and 3 IDs;
+            public static int TotalCodedFieldCount => 3 + (HD_HierarchicDesignator.TotalCodedFieldCount); // 1 HD and 3 IDs;
 
-            public int DataTablesRequired => TablesRequired;
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             public override string ToString()
             {

@@ -141,7 +141,7 @@ namespace TestHL7Enumerator
             Assert.Equal("01", hl7Id.CheckDigit);
             Assert.Equal("IDCODE", hl7Id.CheckDigitScheme.Value);
             Assert.Equal("AUSIC", hl7Id.AssigningAuthority.NamespaceId.BestValue);
-            Assert.Equal("NI", hl7Id.IdentifierTypeCode);
+            Assert.Equal("NI", hl7Id.IdentifierTypeCode.BestValue);
             Assert.Equal("RMH", hl7Id.AssigningFacility.NamespaceId.BestValue);
             Assert.Equal(new DateTime(2020, 07, 01).ToUniversalTime(), hl7Id.EffectiveDate.Value.ToUniversalTime());
             Assert.Equal(new DateTime(2025, 07, 01).ToUniversalTime(), hl7Id.ExpirationDate.Value.ToUniversalTime());
@@ -169,7 +169,7 @@ namespace TestHL7Enumerator
             Assert.Equal("01", id1.CheckDigit);
             Assert.Equal("IDCODE", id1.CheckDigitScheme.BestValue);
             Assert.Equal("AUSIC", id1.AssigningAuthority.NamespaceId.BestValue);
-            Assert.Equal("NI", id1.IdentifierTypeCode);
+            Assert.Equal("NI", id1.IdentifierTypeCode.BestValue);
             Assert.Equal("RMH", id1.AssigningFacility.NamespaceId.BestValue);
             Assert.Equal(new DateTime(2020, 07, 01).ToUniversalTime(), id1.EffectiveDate.Value.ToUniversalTime());
             Assert.Equal(new DateTime(2025, 07, 01).ToUniversalTime(), id1.ExpirationDate.Value.ToUniversalTime());
@@ -177,12 +177,12 @@ namespace TestHL7Enumerator
             Assert.Equal("3071D2942H", id2.ID);
             Assert.Equal("", id2.CheckDigitScheme.BestValue);
             Assert.Equal("AUSLINK", id2.AssigningAuthority.NamespaceId.BestValue);
-            Assert.Equal("AN", id2.IdentifierTypeCode);
+            Assert.Equal("AN", id2.IdentifierTypeCode.BestValue);
             Assert.Null(id2.AssigningFacility);
 
             Assert.Equal("307111942HR", id5.ID);
             Assert.Equal("AUSLINK", id5.AssigningAuthority.NamespaceId.BestValue);
-            Assert.Equal("PEN", id5.IdentifierTypeCode);
+            Assert.Equal("PEN", id5.IdentifierTypeCode.BestValue);
         }
 
         [Fact]

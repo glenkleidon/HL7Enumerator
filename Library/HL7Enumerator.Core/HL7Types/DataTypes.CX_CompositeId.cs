@@ -23,13 +23,13 @@ namespace HL7Enumerator.Types
                 var tblsUsed = 0;
                 ID = element.ElementValue(0);
                 CheckDigit = element.ElementValue(1);
-                CheckDigitScheme = NewID(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed));
+                CheckDigitScheme = NewID(element.ElementValue(2), NextTableId(tableIds, ref tblsUsed), Tables);
                 AssigningAuthority = element.AsHD(3, tableIds?.Skip(tblsUsed), Tables);
-                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount;
 
-                IdentifierTypeCode = element.ElementValue(4);
+                IdentifierTypeCode = NewID(element.ElementValue(4), NextTableId(tableIds, ref tblsUsed), Tables);
                 AssigningFacility = element.AsHD(5, tableIds?.Skip(tblsUsed), Tables);
-                tblsUsed += HD_HierarchicDesignator.TablesRequired;
+                tblsUsed += HD_HierarchicDesignator.TotalCodedFieldCount;
 
                 EffectiveDate = element.FromTS(6);
                 ExpirationDate = element.FromTS(7);
@@ -39,14 +39,14 @@ namespace HL7Enumerator.Types
             public string CheckDigit { get; set; }
             public ID_CodedValue CheckDigitScheme { get; set; }
             public HD_HierarchicDesignator AssigningAuthority { get; set; }
-            public string IdentifierTypeCode { get; set; }
+            public ID_CodedValue IdentifierTypeCode { get; set; }
             public HD_HierarchicDesignator AssigningFacility { get; set; }
             public DateTime? EffectiveDate { get; set; }
             public DateTime? ExpirationDate { get; set; }
 
-            public static int TablesRequired => 1 + (2 * HD_HierarchicDesignator.TablesRequired); //2Hds and 1 ID
+            public static int TotalCodedFieldCount => 2 + (2 * HD_HierarchicDesignator.TotalCodedFieldCount); //2Hds and 2 IDs
 
-            public int DataTablesRequired => TablesRequired;
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             public override string ToString()
             {
@@ -57,8 +57,8 @@ namespace HL7Enumerator.Types
                 var ns = NextSeparator(separator);
                 return
                     $"{ID}{separator}{CheckDigit}{separator}{CheckDigitScheme?.BestValue}{separator}" +
-                    $"{AssigningAuthority?.ToString(ns)}{separator}{IdentifierTypeCode}{separator}{AssigningFacility?.ToString(ns)}" +
-                    $"{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}"
+                    $"{AssigningAuthority?.ToString(ns)}{separator}{IdentifierTypeCode?.BestValue}{separator}"+
+                    $"{AssigningFacility?.ToString(ns)}{EffectiveDate?.AsDTLocal()}{separator}{ExpirationDate?.AsDTLocal()}"
                     .TrimEnd(separator);
 
             }

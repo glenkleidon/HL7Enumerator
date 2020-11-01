@@ -19,9 +19,9 @@ namespace HL7Enumerator.Types
             public CE_CodedElement NameContext { get; set; }
             public ID_CodedValue NameAssemblyOrder { get; set; }
 
-            public static int TablesRequired => (2 * CE_CodedElement.TablesRequired) + 4;
+            public static int TotalCodedFieldCount => (2 * CE_CodedElement.TotalCodedFieldCount) + 4;
 
-            public virtual int DataTablesRequired => TablesRequired;
+            public virtual int DataTablesRequired => TotalCodedFieldCount;
 
             public XPN_ExtendedPersonName()
             {
@@ -30,6 +30,8 @@ namespace HL7Enumerator.Types
             public XPN_ExtendedPersonName(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables =null)
                 :base(element, tableIds, tables)
             {
+                this.Tables = tables;
+                Populate(element, tableIds);
             }
 
             public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
@@ -41,12 +43,12 @@ namespace HL7Enumerator.Types
                 SecondGivenNamesOrInitials = element.ElementValue(2);
                 Suffix = element.ElementValue(3);
                 Prefix = element.ElementValue(4);
-                Degree = NewIS(element.IndexedElement(5), NextTableId(tableIds, ref tblsUsed));
+                Degree = NewIS(element.IndexedElement(5), NextTableId(tableIds, ref tblsUsed), Tables);
                 NameTypeCode = NewID(element.IndexedElement(6), NextTableId(tableIds, ref tblsUsed));
-                NameRepresentationCode = NewID(element.IndexedElement(7), NextTableId(tableIds, ref tblsUsed));
+                NameRepresentationCode = NewID(element.IndexedElement(7), NextTableId(tableIds, ref tblsUsed), Tables);
                 NameContext = element.IndexedElement(8).AsCE(tableIds, Tables);
-                tblsUsed += CE_CodedElement.TablesRequired;
-                NameAssemblyOrder = NewID(element.IndexedElement(9), NextTableId(tableIds, ref tblsUsed));
+                tblsUsed += CE_CodedElement.TotalCodedFieldCount;
+                NameAssemblyOrder = NewID(element.IndexedElement(9), NextTableId(tableIds, ref tblsUsed), Tables);
             }
 
             public override string ToString()

@@ -53,9 +53,9 @@ namespace HL7Enumerator.Types
             public string AlternateText { get; set; }
             public IS_CodedValue NameOfAlternateCodingSystem { get; set; }
 
-            public static int TablesRequired => 2; // two ISs.
+            public static int TotalCodedFieldCount => 2; // two ISs.
 
-            public int DataTablesRequired => TablesRequired;
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             IDataTableProvider IHL7Type.Tables { get => throw new System.NotImplementedException(); set => throw new System.NotImplementedException(); }
 

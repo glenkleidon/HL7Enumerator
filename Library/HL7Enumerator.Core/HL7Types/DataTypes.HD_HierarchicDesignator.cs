@@ -28,8 +28,8 @@ namespace HL7Enumerator.Types
             public string UniversalId { get; set; }
             public ID_CodedValue UniversalIdType { get; set; }
 
-            public static int TablesRequired => 2; // 2 ISs used.
-            public int DataTablesRequired => TablesRequired;
+            public static int TotalCodedFieldCount => 2; // 2 ISs used.
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             public override string ToString()
             {

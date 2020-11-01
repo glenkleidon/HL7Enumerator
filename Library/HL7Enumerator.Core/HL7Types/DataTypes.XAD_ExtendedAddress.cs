@@ -22,9 +22,9 @@ namespace HL7Enumerator.Types
             public ID_CodedValue AddressRepresentationCode { get; set; }
             public DR_DateRange AddressValidityRange { get; set; }
 
-            public static int TablesRequired => 5;// 3 Ids and 2 ISs;
+            public static int TotalCodedFieldCount => 5;// 3 Ids and 2 ISs;
 
-            public int DataTablesRequired => TablesRequired;
+            public int DataTablesRequired => TotalCodedFieldCount;
 
             public XAD_ExtendedAddress()
             {
@@ -33,6 +33,8 @@ namespace HL7Enumerator.Types
             public XAD_ExtendedAddress(HL7Element element, IEnumerable<string> tableIds = null, IDataTableProvider tables = null)
                 : base(element, tableIds, tables)
             {
+                Tables = tables;
+                Populate(element, tableIds);
             }
 
             public override void Populate(HL7Element element, IEnumerable<string> tableIds = null)
@@ -43,12 +45,12 @@ namespace HL7Enumerator.Types
                 City = element.ElementValue(2);
                 StateOrProvince = element.ElementValue(3);
                 ZipOrPostalCode = element.ElementValue(4);
-                Country = NewID(element.ElementValue(5), NextTableId(tableIds, ref tblsUsed));
-                AddressType = NewID(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed));
+                Country = NewID(element.ElementValue(5), NextTableId(tableIds, ref tblsUsed),Tables);
+                AddressType = NewID(element.ElementValue(6), NextTableId(tableIds, ref tblsUsed), Tables);
                 OtherGeographicDesignation = element.ElementValue(7);
-                CountyOrParishCode = NewIS(element.ElementValue(8), NextTableId(tableIds, ref tblsUsed));
-                CensusTract = NewIS(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed));
-                AddressRepresentationCode = NewID(element.ElementValue(10), NextTableId(tableIds, ref tblsUsed));
+                CountyOrParishCode = NewIS(element.ElementValue(8), NextTableId(tableIds, ref tblsUsed), Tables);
+                CensusTract = NewIS(element.ElementValue(9), NextTableId(tableIds, ref tblsUsed), Tables);
+                AddressRepresentationCode = NewID(element.ElementValue(10), NextTableId(tableIds, ref tblsUsed), Tables);
                 AddressValidityRange = element.AsDateRange(11);
             }
 
