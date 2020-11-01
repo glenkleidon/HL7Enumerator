@@ -610,6 +610,23 @@ namespace HL7Enumerator.Types
             return element;
         }
 
+        public static DateTime? AsDateTime(this HL7Element element)
+        {
+            string dtText = element;
+            return AsDateTime(dtText);
+        }
+        public static DateTime? AsLocalTime(this HL7Element element)
+        {
+            string dtText = element;
+            return ToLocalDateTime(dtText);
+        }
+        public static DateTime? AsUTCTime(this HL7Element element)
+        {
+            string dtText = element;
+            return ToUTCDateTime(dtText);
+        }
+
+
 
         internal static string NextTableId(IEnumerable<string> tableIds, ref int index)
         {
@@ -623,6 +640,7 @@ namespace HL7Enumerator.Types
             }
             return id;
         }
+
 
     }
 }

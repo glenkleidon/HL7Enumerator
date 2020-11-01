@@ -19,7 +19,7 @@ namespace Example1
         static void Main(string[] args)
         {
 
-            var msgText = @"MSH|^~\&|CERNER||PriorityHealth||||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
+            var msgText = @"MSH|^~\&|CERNER||PriorityHealth||20191020050600+1000||ORU^R01|Q479004375T431430612|P|2.3|" + "\r" +
               @"PID|||001677980~212323112^^^AUTH^MR^TESTING||SMITH^CURTIS||19680219|M||||||||||929645156318|123456789|" + "\r" +
               @"PD1||||1234567890^LAST^FIRST^M^^^^^NPI|" + "\r" +
               @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|" + "\r" +
@@ -65,7 +65,7 @@ namespace Example1
                 DisplayUsingLinq();
                 Console.WriteLine("Eg Test Names: ");
                 var OBXTestNames = mesg.AllSegments("OBX").Select(o => o.Element("*.3.2"));
-                // Note the use of the "*" wildcard - ovoids needing to specify the Segment level.
+                // Note the use of the "*" wildcard - avoids needing to specify the Segment level.
 
                 // Use Implicit String Casting to Output any Element as a string.
                 Console.WriteLine($"\r\nThe message contains {OBXTestNames.Count()} Test Results:");
@@ -85,8 +85,8 @@ namespace Example1
                 Console.WriteLine($"Patients Name is : {mesg.Element(PatientFamilyName)}, {mesg.Element(PatientGivenName)}.");
 
                 DisplayDataTypesMessage();
-                // Use the "HL7Types" Namespace Helpers to get safely get Numbered Field Values from components
-                // Remember that Element FIEDLS are ZERO based but in Segments the Segment Name is 0 so the FIELD Numbers
+                // Use the "HL7Types" Namespace Helpers to safely get Numbered Field Values from components
+                // Remember that Element FIELDS are ZERO based but in Segments the Segment Name is 0 so the FIELD Numbers
                 // still correspond to the HL7 field numbers.  
                 const int fldSequence = 1;
                 const int fldDataType = 2;
@@ -265,6 +265,31 @@ namespace Example1
                    }
                 );
 
+                DisplayTimeAndNumericConversion();
+                Console.WriteLine("Convert Dates in UTC and Local Format");
+                var ptDOB = "PID.7";
+                var mesgTime = "MSH.7";
+
+                var dob = mesg.Element(ptDOB);
+                var mesgTs = mesg.Element(mesgTime);
+
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} does not have Time Timezone. Assumed local.\r\n  {dob.AsDateTime()}");
+                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} does not have Time Timezone. Stored as UTC.\r\n  {mesgTs.AsDateTime()}");
+
+                Console.WriteLine($"If you want to Always work in localTime, ALWAYS use the AsLocalTime() method");
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} Local Time.\r\n  {dob.AsLocalTime()}");
+                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} Local Time.\r\n  {mesgTs.AsLocalTime()}");
+
+                Console.WriteLine($"If you want to Always work in UTC time, ALWAYS use the AsUTCTime() method");
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} UTC Time.\r\n  {dob.AsUTCTime()}");
+                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} UTC Time.\r\n  {mesgTs.AsUTCTime()}");
+
+
+
+
+
+
+
 
                 DisplayComposingMessages();
 
@@ -305,6 +330,14 @@ namespace Example1
             }
 
             Console.ReadLine();
+        }
+
+        private static void DisplayTimeAndNumericConversion()
+        {
+            Console.WriteLine("\r\nDate And Numeric Conversions");
+            Console.WriteLine("----------------------------");
+            Console.WriteLine("HL7 DataTypes supports DateTime conversion automatically managing TimeZone information.");
+            Console.WriteLine("Implicit conversions are also available for Numeric Types.\r\n");
         }
 
         private static void DisplayAutomaticDataTableAssignment()
