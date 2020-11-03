@@ -98,7 +98,7 @@ namespace TestHL7Enumerator
             var utcDt = DataTypes.ToUTCDateTime(input);
             var dtText = dt.Value.ToString("o");
             var compareText = (isLocal) ? localDt.Value.ToString("o") : utcDt.Value.ToString("o");
-            Assert.Equal(dtText, compareText);
+            Assert.Equal(dtText, compareText.Substring(0,dtText.Length));
         }
 
         [Theory]

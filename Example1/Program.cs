@@ -11,6 +11,7 @@ using HL7Enumerator.HL7Tables.Interfaces;
 using HL7Enumerator.Types;
 using static HL7Enumerator.Types.DataTypes;
 using System.Reflection;
+using System.Runtime.Remoting.Metadata.W3cXsd2001;
 
 namespace Example1
 {
@@ -203,7 +204,7 @@ namespace Example1
                 // First Use a Table Provider as a source of tables. 
                 // The File Provider can access any table in a folder by TableID is very useful for this purpose
                 var HL7TablesFolder = Path.Combine(
-                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase).Substring(6), 
+                    Path.GetDirectoryName(Assembly.GetExecutingAssembly().GetName().CodeBase).Substring(6),
                     "ExampleTables");
                 Console.WriteLine($"The process is: First, Get an instance of a table provider");
                 Console.WriteLine("Eg: The 'FolderDataTableProvider'");
@@ -225,70 +226,89 @@ namespace Example1
                 tableIds.Add("0301"); // CX_CompositeId.AssigningFacility.UniversalIDType needs 0301 again (include it again)
 
                 Console.WriteLine("Table Ids required for PID.5 (CX)");
-                tableIds.ForEach(t=> Console.WriteLine($"  {t}"));
+                tableIds.ForEach(t => Console.WriteLine($"  {t}"));
 
                 var validatedPatientIds = ids.AsCXs(tableIds, tablesFromFolder);
                 c = 0;
                 validatedPatientIds.ToList().ForEach(id =>
-                   {
-                       Console.WriteLine($"\r\nID {++c} {id.ID}");
-                       var bestValue = id.CheckDigitScheme?.BestValue;
-                       var isValid = (id.CheckDigitScheme == null) ? "" : (id.CheckDigitScheme.IsValid.Value) ? "Yes" : "No";
-                       var description = id.CheckDigitScheme.Description;
-                       Console.WriteLine($"  CheckDigitScheme                  : {bestValue,7} Valid: {isValid} {description}");
+                {
+                    Console.WriteLine($"\r\nID {++c} {id.ID}");
+                    var bestValue = id.CheckDigitScheme?.BestValue;
+                    var isValid = (id.CheckDigitScheme == null) ? "" : (id.CheckDigitScheme.IsValid.Value) ? "Yes" : "No";
+                    var description = id.CheckDigitScheme.Description;
+                    Console.WriteLine($"  CheckDigitScheme                  : {bestValue,7} Valid: {isValid} {description}");
 
-                       bestValue = id.AssigningAuthority?.NamespaceId.BestValue;
-                       isValid = (id.AssigningAuthority?.NamespaceId == null) ? "" : (id.AssigningAuthority.NamespaceId.IsValid.Value) ? "Yes" : "No";
-                       description = id.AssigningAuthority?.NamespaceId.Description;
-                       Console.WriteLine($"  AssigningAuthority.NamespaceId    : {bestValue,7} Valid: {isValid} {description}");
+                    bestValue = id.AssigningAuthority?.NamespaceId.BestValue;
+                    isValid = (id.AssigningAuthority?.NamespaceId == null) ? "" : (id.AssigningAuthority.NamespaceId.IsValid.Value) ? "Yes" : "No";
+                    description = id.AssigningAuthority?.NamespaceId.Description;
+                    Console.WriteLine($"  AssigningAuthority.NamespaceId    : {bestValue,7} Valid: {isValid} {description}");
 
-                       bestValue = id.AssigningAuthority?.UniversalIdType.BestValue;
-                       isValid = (id.AssigningAuthority?.UniversalIdType == null) ? "" : (id.AssigningAuthority.UniversalIdType.IsValid.Value) ? "Yes" : "No";
-                       description = id.AssigningAuthority?.UniversalIdType.Description;
-                       Console.WriteLine($"  AssigningAuthority.UniversalIdType: {bestValue,7} Valid: {isValid} {description}");
+                    bestValue = id.AssigningAuthority?.UniversalIdType.BestValue;
+                    isValid = (id.AssigningAuthority?.UniversalIdType == null) ? "" : (id.AssigningAuthority.UniversalIdType.IsValid.Value) ? "Yes" : "No";
+                    description = id.AssigningAuthority?.UniversalIdType.Description;
+                    Console.WriteLine($"  AssigningAuthority.UniversalIdType: {bestValue,7} Valid: {isValid} {description}");
 
-                       bestValue = id.IdentifierTypeCode?.BestValue;
-                       isValid = (id.IdentifierTypeCode == null) ? "" : (id.IdentifierTypeCode.IsValid.Value) ? "Yes" : "No";
-                       description = id.IdentifierTypeCode?.Description;
-                       Console.WriteLine($"  IdentifierTypeCode                : {bestValue,7} Valid: {isValid} {description}");
+                    bestValue = id.IdentifierTypeCode?.BestValue;
+                    isValid = (id.IdentifierTypeCode == null) ? "" : (id.IdentifierTypeCode.IsValid.Value) ? "Yes" : "No";
+                    description = id.IdentifierTypeCode?.Description;
+                    Console.WriteLine($"  IdentifierTypeCode                : {bestValue,7} Valid: {isValid} {description}");
 
-                       bestValue = id.AssigningFacility?.NamespaceId.BestValue;
-                       isValid = (id.AssigningFacility?.NamespaceId == null) ? "" : (id.AssigningFacility.NamespaceId.IsValid.Value) ? "Yes" : "No";
-                       description = id.AssigningFacility?.NamespaceId.Description;
-                       Console.WriteLine($"  AssigningFacility.NamespaceId     : {bestValue,7} Valid: {isValid} {description}");
+                    bestValue = id.AssigningFacility?.NamespaceId.BestValue;
+                    isValid = (id.AssigningFacility?.NamespaceId == null) ? "" : (id.AssigningFacility.NamespaceId.IsValid.Value) ? "Yes" : "No";
+                    description = id.AssigningFacility?.NamespaceId.Description;
+                    Console.WriteLine($"  AssigningFacility.NamespaceId     : {bestValue,7} Valid: {isValid} {description}");
 
-                       bestValue = id.AssigningFacility?.UniversalIdType?.BestValue;
-                       isValid = (id.AssigningFacility?.UniversalIdType == null) ? "" : (id.AssigningFacility.UniversalIdType.IsValid.Value) ? "Yes" : "No";
-                       description = id.AssigningFacility?.UniversalIdType?.Description;
-                       Console.WriteLine($"  AssigningFacility.UniversalIdType : {bestValue,7} Valid: {isValid} {description}");
+                    bestValue = id.AssigningFacility?.UniversalIdType?.BestValue;
+                    isValid = (id.AssigningFacility?.UniversalIdType == null) ? "" : (id.AssigningFacility.UniversalIdType.IsValid.Value) ? "Yes" : "No";
+                    description = id.AssigningFacility?.UniversalIdType?.Description;
+                    Console.WriteLine($"  AssigningFacility.UniversalIdType : {bestValue,7} Valid: {isValid} {description}");
 
-                   }
+                }
                 );
 
                 DisplayTimeAndNumericConversion();
-                Console.WriteLine("Convert Dates in UTC and Local Format");
                 var ptDOB = "PID.7";
                 var mesgTime = "MSH.7";
 
                 var dob = mesg.Element(ptDOB);
                 var mesgTs = mesg.Element(mesgTime);
 
-                Console.WriteLine($"DOB {mesg.Element(ptDOB)} does not have Time Timezone. Assumed local.\r\n  {dob.AsDateTime()}");
-                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} does not have Time Timezone. Stored as UTC.\r\n  {mesgTs.AsDateTime()}");
-
-                Console.WriteLine($"If you want to Always work in localTime, ALWAYS use the AsLocalTime() method");
-                Console.WriteLine($"DOB {mesg.Element(ptDOB)} Local Time.\r\n  {dob.AsLocalTime()}");
-                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} Local Time.\r\n  {mesgTs.AsLocalTime()}");
-
-                Console.WriteLine($"If you want to Always work in UTC time, ALWAYS use the AsUTCTime() method");
-                Console.WriteLine($"DOB {mesg.Element(ptDOB)} UTC Time.\r\n  {dob.AsUTCTime()}");
-                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} UTC Time.\r\n  {mesgTs.AsUTCTime()}");
+                DisplayAsDateTimeInformation();
+                Console.WriteLine($"DOB.AsDateTime() {mesg.Element(ptDOB)} does not have Timezone, so assume Local");
+                Console.WriteLine($"  {dob.AsDateTime()} = {dob.AsDateTime().Value.ToString("o")}");
+                Console.WriteLine($"msgTs.AsDateTime() {mesg.Element(mesgTime)} has Time Timezone. Stored as UTC.");
+                Console.WriteLine($"  {mesgTs.AsDateTime()} = {mesgTs.AsDateTime().Value.ToString("o")}");
 
 
+                DisplayAsLocalDateTimeInformation();
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} No timezone, so display Current LOCAL");
+                Console.WriteLine($"  {dob.AsLocalTime()} = {dob.AsLocalTime().Value.ToString("o")}");
+                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} Has TimeZone Shows in Current local");
+                Console.WriteLine($"  {mesgTs.AsLocalTime()} = {mesgTs.AsLocalTime().Value.ToString("o")}");
 
+                DisplayAsUTCDateTimeInformation();
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} No Timezone, So safe to assume local to you");
+                Console.WriteLine($"  {dob.AsUTCTime()} = {dob.AsUTCTime().Value.ToString("o")}");
+                Console.WriteLine($"DOB {mesg.Element(ptDOB)} No Timezone, but can be forced to UTC.");
+                Console.WriteLine($"  {dob.AsDateTime(DateTimeStyles.AssumeUniversal).Value.ToString("o")}");
+                Console.WriteLine($"msgTime {mesg.Element(mesgTime)} is converted to UTC Time.");
+                Console.WriteLine($"  {mesgTs.AsUTCTime()} = {mesgTs.AsUTCTime().Value.ToString("o")}" );
 
+                // NM_Numeric data Type supports implicity, explicit and has  As<Type> Methods.
+                DisplayNumericConversion();
+                const string ResultValue = "OBX[1].5";
 
-
+                // Examples:
+                var result1 = mesg.Element(ResultValue).AsNM();
+                int nmAsInt = result1.AsInteger();
+                var nmAsFloat = result1.AsFloat();
+                double nmAsdouble = result1;
+                var nmAsCurrency = (decimal)result1;
+                Console.WriteLine($"Result 1 ToString() {result1}");
+                Console.WriteLine($"Result 1 {nmAsInt.GetType().Name} value {nmAsInt}");
+                Console.WriteLine($"Result 1 {nmAsFloat.GetType().Name} value {nmAsFloat:0.0}");
+                Console.WriteLine($"Result 1 {nmAsdouble.GetType().Name} value {nmAsdouble:0.00000000}");
+                Console.WriteLine($"Result 1 {nmAsCurrency.GetType().Name} value {nmAsCurrency:0.00}");
 
 
                 DisplayComposingMessages();
@@ -330,6 +350,45 @@ namespace Example1
             }
 
             Console.ReadLine();
+        }
+
+        private static void DisplayNumericConversion()
+        {
+            Console.WriteLine("\r\nNumeric Data Type Conversions");
+            Console.WriteLine("------------------------------");
+            Console.WriteLine("There are Extension Methods for the NM_Numeric Data type allowing");
+            Console.WriteLine("implicit and explicit numermic conversion.");
+            Console.WriteLine("Exceptions wil be raised if the value will not cast.");
+
+        }
+
+        private static void DisplayAsDateTimeInformation()
+        {
+            Console.WriteLine("\r\nHL7Element.AsDateTime([DateTimeStyle])");
+            Console.WriteLine("--------------------------------------");
+            Console.WriteLine("\r\nConvert Dates in UTC and Local Format");
+            Console.WriteLine($"Converts to DateTime storing timezone information if include");
+            Console.WriteLine($"and converting to UTC if possible.");
+        }
+
+        private static void DisplayAsUTCDateTimeInformation()
+        {
+            Console.WriteLine("\r\nHL7Element.AsUTCTime()");
+            Console.WriteLine("----------------------");
+
+            Console.WriteLine($"If you want to work in UTC time, ALWAYS use the AsUTCTime() method.");
+            Console.WriteLine($"Converts to UTC regardless of the original timezone but preserves");
+            Console.WriteLine($"local behaviour for timestamps without Timezone information.");
+        }
+
+        private static void DisplayAsLocalDateTimeInformation()
+        {
+            Console.WriteLine("\r\nHL7Element.AsLocalTime()");
+            Console.WriteLine("------------------------");
+            Console.WriteLine($"If you want to work in localTime, ALWAYS use the AsLocalTime() method");
+            Console.WriteLine($"Converts to current Local regardless of Original TimeZone ");
+            Console.WriteLine($"and current daylight saving settings.");
+
         }
 
         private static void DisplayTimeAndNumericConversion()

@@ -108,6 +108,10 @@ namespace HL7Enumerator.Types
                     return (Int64.TryParse(value, out newInt64Value)) ? newInt64Value.ToString() : String.Empty;
                 }
             }
+            public override string ToString()
+            {
+                return strValue;
+            }
         }
 
     }

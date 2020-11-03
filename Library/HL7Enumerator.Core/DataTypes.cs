@@ -274,14 +274,15 @@ namespace HL7Enumerator.Types
         /// </summary>
         /// <param name="hl7TS"></param>
         /// <returns></returns>
-        public static DateTime? AsDateTime(string hl7TS)
+        public static DateTime? AsDateTime(string hl7TS, DateTimeStyles dateTimeStyle = DateTimeStyles.None)
         {
             var tsDt = ExtractTimeZone(hl7TS, out string zone);
             var dtText = HL7DateTextAsISODateText(tsDt, zone);
             if (String.IsNullOrEmpty(dtText)) return null;
             if (dtText.Length < 5) dtText = $"{dtText}-01";
-            if (zone?.Length > 0) return DateTime.Parse(dtText, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
-            return DateTime.Parse(dtText, CultureInfo.InvariantCulture, DateTimeStyles.AssumeLocal);
+            if (dateTimeStyle==DateTimeStyles.None && zone?.Length > 0) 
+               return DateTime.Parse(dtText, CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal);
+            return DateTime.Parse(dtText, CultureInfo.InvariantCulture, dateTimeStyle);
         }
         /// <summary>
         /// Converts a HL7 Text string to ISO 8601 format
@@ -393,7 +394,7 @@ namespace HL7Enumerator.Types
         {
             var dt = AsDateTime(value);
             if (dt == null) return null;
-            if (dt.Value.Kind == DateTimeKind.Unspecified) dt = DateTime.SpecifyKind(dt.Value, DateTimeKind.Local);
+            if (dt.Value.Kind == DateTimeKind.Unspecified) return dt;
             return dt.Value.ToUniversalTime();
         }
         public static bool IsLocalTime(DateTime value)
@@ -475,8 +476,13 @@ namespace HL7Enumerator.Types
         /// <returns>a SN_Structured Numeric</returns>
         public static SN_StructuredNumeric AsSN(this HL7Element element)
         {
-            return new DataTypes.SN_StructuredNumeric(element);
+            return new SN_StructuredNumeric(element);
         }
+        public static NM_Number AsNM(this HL7Element element)
+        {
+            return new NM_Number(element);
+        }
+
         /// <summary>
         /// Safely Extract a HL7 CX (Composite ID) from a HL7 Element assuming suitable content
         /// </summary>
@@ -610,10 +616,10 @@ namespace HL7Enumerator.Types
             return element;
         }
 
-        public static DateTime? AsDateTime(this HL7Element element)
+        public static DateTime? AsDateTime(this HL7Element element, DateTimeStyles dateTimeStyle=DateTimeStyles.None)
         {
             string dtText = element;
-            return AsDateTime(dtText);
+            return AsDateTime(dtText, dateTimeStyle);
         }
         public static DateTime? AsLocalTime(this HL7Element element)
         {
