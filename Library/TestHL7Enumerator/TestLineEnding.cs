@@ -1,7 +1,4 @@
 ﻿using HL7Enumerator;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
 namespace TestHL7Enumerator
@@ -15,7 +12,6 @@ namespace TestHL7Enumerator
           @"OBR|1|341856649^HNAM_ORDERID|000002006326002362|648088^Basic Metabolic Panel|||20061122151600|||||||||1620^Hooker^Robert^L||||||20061122154733|||F|||||||||||20061122140000|" + "\r" +
           @"OBX|1|NM|GLU^Glucose Lvl|59|mg/dL|65-99^65^99|L|||F|||20061122154733|" + "\r" +
           @"OBX|2|NM|ALT^Alanine Aminotransferase|13|umol/L|2-20^65^1000|N|||F|||20061122154733|" + "\r";
-
         private const string OBXBase64 =
               @"OBX|3|ED|ClinicalPDFReport1^Clinical PDF Report MR077065T-1^^ClinicalPDFReport1^" +
               @"Clinical PDF Report MR077065T-1||1||MIA^Image^PDF^Base64^JVBERi0xLjQKJeLjz9MKMyAwIG9iaiA8PC9MZW5n" + "\r\n" +
