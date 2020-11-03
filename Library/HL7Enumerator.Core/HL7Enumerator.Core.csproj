@@ -6,7 +6,9 @@
     <Company>Galkam PTY LTD</Company>
     <PackageId>Galkam.HL7Enumerator</PackageId>
     <Product>HL7Enumerator Standard Library</Product>
-    <Description>A Generic HL7 (pipe delimited) message DECODER supporting the IEnumerable Interface.  It allows for Linq queries to be used on HL7 Messages at any level.</Description>
+    <Description>A Generic HL7 message low level DECODER supporting all HL7 PIPE Delimited Messages.  The library implements the IEnumerable Interface allowing for Linq queries to be used on HL7 Messages at any level. 
+
+Common HL7 DataTypes are included within an extensible framework allowing Custom HL7 DataTypes to be defined.  Extensible HL7 Table support for standard and user defined tables is also included.   While the Data Types may reflect the Australian conventions, no specific standards or versions of HL7 are implemented or required.  This makes the library ideal for both compliant and non-compliant message handling.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/glenkleidon/HL7Enumerator</PackageProjectUrl>
     <PackageIcon>HL7 Enum.png</PackageIcon>
@@ -14,12 +16,12 @@
     <RepositoryUrl>https://github.com/glenkleidon/HL7Enumerator</RepositoryUrl>
     <RepositoryType>GIT</RepositoryType>
     <PackageTags>HL7, HL7 Linq, HL7 parser, c#</PackageTags>
-    <PackageReleaseNotes>Added support for Alternate Line Endings.</PackageReleaseNotes>
+    <PackageReleaseNotes>This release is fully backward compatible with earlier releases, however, if you have pre-empted data types or hl7 table support, you could possibly experience some namespace or ambiguous reference issues.</PackageReleaseNotes>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <NeutralLanguage>en</NeutralLanguage>
-    <AssemblyVersion>1.0.1.2</AssemblyVersion>
-    <FileVersion>1.0.1.2</FileVersion>
-    <Version>1.1.2</Version>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <Version>1.2.0</Version>
     <Copyright>Glen Kleidon</Copyright>
   </PropertyGroup>
 
