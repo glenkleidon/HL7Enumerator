@@ -76,7 +76,7 @@ namespace Example1
                 Console.Write("\r\nUse LINQ at the Element (field/component) Level to get information\r\nEg:  ");
                 var NonEmptyComponentsInPD1 =
                     mesg.Element("PD1.4").Where(f => !string.IsNullOrWhiteSpace(f));
-                Console.WriteLine($"PID.3 has {(mesg.Element("PD1.4").Count)} components, and {NonEmptyComponentsInPD1.Count()} have data");
+                Console.WriteLine($"PID.4 has {(mesg.Element("PD1.4").Count)} components, and {NonEmptyComponentsInPD1.Count()} have data");
                 foreach (var component in NonEmptyComponentsInPD1) Console.WriteLine($"  {component}");
 
                 // Use self defined Constants for field definitions to make your code cleaner.

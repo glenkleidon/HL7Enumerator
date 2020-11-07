@@ -1,5 +1,7 @@
 # HL7Enumerator
-C# Library for parsing and enumerating HL7 Messages with LINQ support. 
+C# Library for parsing and enumerating HL7 Messages with LINQ support. With Release 1.2.0, there is also 
+an extensible framework for HL7 Datatypes and HL7 Tables.
+
 ## History
 This project was started as a simple conversation with my colleague who thought that of the 
 available C# HL7 parser libraries out there, none seem to be simple to use and were 
@@ -32,12 +34,13 @@ We wanted to be able to perform actions such as
 
 I agreed that the task should not be that hard to do.  And so the ball started rolling....
 
-## Class Structure 
+## Core Library Class Structure 
 
-The library is deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
-is supported through LINQ.
+The core library is deliberately very simple.  However, as it leverages the *IEnumerable* interface very complex functionality 
+is supported through LINQ.  The DataTypes and HL7 Tables are extension classes that make using core functionality much easier
+and allows automatic conversion to commond HL7 Data Types with validation against standard or custom HL7 Tables.
 
-The library contains 3 operational classes:   
+The core library contains 3 operational classes:   
    + *class* **HL7Message** - Top Level element representing a single message
    + *class* **HL7Element** - Any message or part of a message (and the base class of *HL7Message*)
    + *static class* **EscapeOBXCRLF** - Checks for the presence of unescaped CR and LF in the OBX body and escapes it.
@@ -203,43 +206,50 @@ Note the use of the * wildcard ("this") operater to of the indicate the current 
 the element resides.
  
 ## Composing HL7 Message
+\
+While it is not the primary purpose of this libary at this time to compose messages, the ToString() methods in both the DataTypes Objects
+and the HL7Element make this possible.
 
-While it is not the intention for this library to compose HL7 Messages, it can be used to do so.  Future extension methods will no doubt be created to support 
-cleaner HL7 Composition, but it is possible to compose elements and join them together to create HL7 Messages.  This can be done with a combination of string
-elements or by creating instances of HL7Elements and "Adding" them to the Inherent List<HL7Element> eg
+## The DataTypes Extension Class
+
+These notes are Work in progres...  check out the [WIKI](https://github.com/glenkleidon/HL7Enumerator/wiki)
+
+## The HL7 Tables Extension Class
+
+These notes are Work in progress  check out the [WIKI](https://github.com/glenkleidon/HL7Enumerator/wiki).
+
+### Composing a PID Segment using DataTypes
+
 ```  
-    //Compose a Segment - create extension methods to do this more cleanly
-    // create "PD1||||1234567890^LAST^FIRST^M^^^^^NPI|
+// Compose a Segment
+Console.WriteLine("\r\n Composing a Segment using DataTypes");
+// Composed PID: PID||1234567^4^M11^ADT01^MR^University Hospital|1234567^4^M11^ADT01^MR^University Hospital~8003608833357361^^^AUSHIC^NI^
+var patientIdentifiers = new List<CX_CompositeId>()
+{
+  new CX_CompositeId()
+  {
+   ID = "1234567",
+   CheckDigit = "4",
+   CheckDigitScheme = "M11",
+   AssigningAuthority = new HD_HierarchicDesignator() { NamespaceId = "ADT01" },
+   IdentifierTypeCode = "MR",
+   AssigningFacility = new HD_HierarchicDesignator() { NamespaceId = "University Hospital" }
+  },
+  new CX_CompositeId()
+  {
+   ID = "8003608833357361",
+   AssigningAuthority = new HD_HierarchicDesignator() { NamespaceId = "AUSHIC" },
+   IdentifierTypeCode = "NI"
+  }
+};
 
-    HL7Element pd1 = new HL7Element(null, '|');
-    pd1.Add(new HL7Element("PD1", '~'));
-    pd1.Add(new HL7Element("", '~'));
-    pd1.Add(new HL7Element("", '~'));
-    pd1.Add(new HL7Element("", '~'));
-    HL7Element patientField = new HL7Element(null, '~');
-    pd1.Add(patientField);
-    HL7Element patient = new HL7Element(null, '^');
-    patientField.Add(patient);
-    patient.Add(new HL7Element("1234567890", '&' ));
-    patient.Add(new HL7Element("LAST", '&'));
-    patient.Add(new HL7Element("FIRST", '&'));
-    patient.Add(new HL7Element("M", '&'));
-    patient.Add(new HL7Element("", '&'));
-    patient.Add(new HL7Element("", '&'));
-    patient.Add(new HL7Element("", '&'));
-    patient.Add(new HL7Element("", '&'));
-    patient.Add(new HL7Element("NPI", '&'));
+// Compose a PID 
+var pid = new HL7Segment("PID");
+pid.SetField(2, patientIdentifiers.First());
+pid.SetField(3, patientIdentifiers.AsElement());
 
-    Console.WriteLine("Composed PD1: " + pd1);
+Console.WriteLine("\r\nComposed PID: " + pid);
 ```
-As you can see this will work, however the use of the Field delimiters seems a little obscure.  In the future an extension method could be used to 
-make the style a little cleaner.  eg
-
-``` pd1.AddField(position, FieldContent); 
-FieldContent.AddComponent(position,"1234567890","Last","First"...);
-``` 
-
-might be sensible extensions.
 
 
 
