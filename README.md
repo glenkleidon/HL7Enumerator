@@ -140,14 +140,14 @@ In contrast `PID.3` is equivalent to `PID.3[1]`
 
 *This feature was release in Nuget Package Version 1.1.1*
 
-## HL7Element Extension Methods
+### HL7Element Extension Methods
 
 The HL7DataTypes Class implements a large number of extensions for the HL7Element.  This includes methods for
 casting to specific HL7 Datatypes (_As_ Methods eg **AsCX()**) and also more primitive methods for creating
 custom types.
 
 
-### DataTypes.IndexedElement(HL7Enumerator.HL7Element,int) 
+#### DataTypes.IndexedElement(HL7Enumerator.HL7Element,int) 
 
 Safely locate the desired element If it exists (returning defaults).  Use primarily to create custom type 
 extensions.
@@ -156,7 +156,7 @@ Parameter:  *element* HL7 Element
 Parameter:  *index* the index in the element required
 Returning:  A HL7 element if it exists
 
-### DataTypes.ElementValue(HL7Enumerator.HL7Element,int) 
+#### DataTypes.ElementValue(HL7Enumerator.HL7Element,int) 
 
 Safely return Value of the desired Element.  This relieves the need to check 
 for the existence or null value of the required element.  Used primarily for creating custom types extensions.
@@ -165,7 +165,7 @@ Parameter:  *element* The Containing element element
 Parameter:  *index* Zero based index of the element required
 Returning:  A string represenation of the hl7 field.
 
-### DataTypes.AsHD(HL7Enumerator.HL7Element,int,IEnumerable<string>,IDataTableProvider) 
+#### DataTypes.AsHD(HL7Enumerator.HL7Element,int,IEnumerable<string>,IDataTableProvider) 
 
 Safely Extract the Supplied element assuming the element contains suitable contents.
 
@@ -173,7 +173,7 @@ Parameter:  *element* Element representing or containing the HD Data
 Parameter:  *index* Optionally the sub element 
 Returning:  A fully populated HL7 HD object
 
-### DataTypes.AsDateRange(HL7Enumerator.HL7Element,int) 
+#### DataTypes.AsDateRange(HL7Enumerator.HL7Element,int) 
 
 Safely Extract a Date Range from the Supplied element assuming suitable contents;
 
